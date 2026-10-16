@@ -1,0 +1,47 @@
+{
+  "synthetic": true,
+  "http_status": 200,
+  "invalid_input_status": 422,
+  "latency_ms": [
+    6.288875127211213,
+    3.9872920606285334,
+    2.847542054951191
+  ],
+  "result": {
+    "results": [
+      {
+        "adapter": "first_sentence",
+        "mean_latency_ms": 0.007194333333333334,
+        "p95_latency_ms": 0.013667,
+        "exact_match_accuracy": 0.0,
+        "predictions": [
+          "The bicycle is green."
+        ],
+        "successful_runs": 3,
+        "measured_runs": 3,
+        "attempted_runs": 3,
+        "errors": []
+      },
+      {
+        "adapter": "lexical_retrieval",
+        "mean_latency_ms": 0.010847333333333334,
+        "p95_latency_ms": 0.013917,
+        "exact_match_accuracy": 1.0,
+        "predictions": [
+          "The boat is blue."
+        ],
+        "successful_runs": 3,
+        "measured_runs": 3,
+        "attempted_runs": 3,
+        "errors": []
+      }
+    ],
+    "dataset_size": 1,
+    "limitations": [
+      "Built-in baselines are extractive CPU methods, not LLMs. local_llm calls an operator-supplied local OpenAI-compatible server via numeric loopback or the fixed Docker host bridge.",
+      "Timings include adapter execution and local HTTP round trips for local_llm, and vary by machine.",
+      "Exact match ignores case and punctuation. Accuracy covers successful runs only; check errors and successful_runs.",
+      "Synthetic labels and transport tests do not establish real model quality. No model weights are bundled."
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    ports: ["127.0.0.1:8000:8000"]
+    read_only: true
+    tmpfs: ["/tmp"]
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+    mem_limit: 512m
+    cpus: 1
+    environment:
+      MODELARENA_LLM_URL: ${MODELARENA_LLM_URL:-http://host.docker.internal:11434/v1/chat/completions}

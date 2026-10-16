@@ -1,0 +1,293 @@
+Negative control: copied app with only new async-import generation guards removed. Production app was not changed. Expected test failures demonstrate that regression tests detect the defect.
+TAP version 13
+# Subtest: CSV supports BOM, escaped quotes, embedded newlines, CRLF and empty cells
+ok 1 - CSV supports BOM, escaped quotes, embedded newlines, CRLF and empty cells
+  ---
+  duration_ms: 1.748958
+  type: 'test'
+  ...
+# Subtest: CSV rejects ambiguity and reports the physical data-row position
+ok 2 - CSV rejects ambiguity and reports the physical data-row position
+  ---
+  duration_ms: 0.322958
+  type: 'test'
+  ...
+# Subtest: Numeric inference preserves identifiers and rejects overflow
+ok 3 - Numeric inference preserves identifiers and rejects overflow
+  ---
+  duration_ms: 0.270042
+  type: 'test'
+  ...
+# Subtest: CSV export neutralizes formula cells including whitespace prefixes; negatives stay numeric
+ok 4 - CSV export neutralizes formula cells including whitespace prefixes; negatives stay numeric
+  ---
+  duration_ms: 0.118875
+  type: 'test'
+  ...
+# Subtest: Untrusted values are assigned to textContent, never interpreted as HTML
+ok 5 - Untrusted values are assigned to textContent, never interpreted as HTML
+  ---
+  duration_ms: 0.08625
+  type: 'test'
+  ...
+# Subtest: File size check happens before reading and API validation paths are actionable
+ok 6 - File size check happens before reading and API validation paths are actionable
+  ---
+  duration_ms: 0.181458
+  type: 'test'
+  ...
+# Subtest: Delayed actual UI file import cannot replace a newer synthetic sample
+not ok 7 - Delayed actual UI file import cannot replace a newer synthetic sample
+  ---
+  duration_ms: 7.787958
+  type: 'test'
+  location: '/Users/a2/Documents/Codex/2026-10-13/ai-open-source-venture-lab-36/work/rebuild/import-regression-proof/modelarena/tools/test_ui.mjs:94:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    ... Skipped lines
+    
+      [
+        [
+          '',
+          false
+        ],
+    ...
+        [
+    -     'How many people are on the team?',
+    -     false
+    -   ],
+    -   [
+    -     'The synthetic team contains five people.',
+    -     false
+    -   ],
+    -   [
+          'local-model',
+          false
+        ],
+        [
+          3,
+    ...
+        ],
+    -   [
+    -     'The synthetic team contains five people.',
+    -     false
+    -   ]
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0:
+      0: ''
+      1: false
+    1:
+      0: 'What color is the boat?'
+      1: false
+    2:
+      0: 'The boat is blue.'
+      1: false
+    3:
+      0: 'How many people are on the team?'
+      1: false
+    4:
+      0: 'The synthetic team contains five people.'
+      1: false
+    5:
+      0: 'local-model'
+      1: false
+    6:
+      0: 3
+      1: false
+    7:
+      0: 128
+      1: false
+    8:
+      0: 30
+      1: false
+    9:
+      0: 'The bicycle is green. The boat is blue.'
+      1: false
+    10:
+      0: 'The synthetic team contains five people.'
+      1: false
+  actual:
+    0:
+      0: ''
+      1: false
+    1:
+      0: 'What color is the boat?'
+      1: false
+    2:
+      0: 'The boat is blue.'
+      1: false
+    3:
+      0: 'local-model'
+      1: false
+    4:
+      0: 3
+      1: false
+    5:
+      0: 128
+      1: false
+    6:
+      0: 30
+      1: false
+    7:
+      0: 'The bicycle is green. The boat is blue.'
+      1: false
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/a2/Documents/Codex/2026-10-13/ai-open-source-venture-lab-36/work/rebuild/import-regression-proof/modelarena/tools/test_ui.mjs:119:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: Late actual UI file rejection cannot replace newer status
+not ok 8 - Late actual UI file rejection cannot replace newer status
+  ---
+  duration_ms: 1.916583
+  type: 'test'
+  location: '/Users/a2/Documents/Codex/2026-10-13/ai-open-source-venture-lab-36/work/rebuild/import-regression-proof/modelarena/tools/test_ui.mjs:124:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'Old file read failed'
+    - 'Two synthetic benchmark cases loaded. Baselines require no model server.'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'Two synthetic benchmark cases loaded. Baselines require no model server.'
+  actual: 'Old file read failed'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/a2/Documents/Codex/2026-10-13/ai-open-source-venture-lab-36/work/rebuild/import-regression-proof/modelarena/tools/test_ui.mjs:143:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: Actual UI accepts an unsuperseded JSON file import
+ok 9 - Actual UI accepts an unsuperseded JSON file import
+  ---
+  duration_ms: 2.5375
+  type: 'test'
+  ...
+# Subtest: Delayed actual UI file import cannot replace a manual field edit
+not ok 10 - Delayed actual UI file import cannot replace a manual field edit
+  ---
+  duration_ms: 1.851416
+  type: 'test'
+  location: '/Users/a2/Documents/Codex/2026-10-13/ai-open-source-venture-lab-36/work/rebuild/import-regression-proof/modelarena/tools/test_ui.mjs:171:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    ... Skipped lines
+    
+      [
+        [
+          '',
+          false
+        ],
+    ...
+        [
+    -     'How many people are on the team?',
+    -     false
+    -   ],
+    -   [
+    -     'The synthetic team contains five people.',
+    -     false
+    -   ],
+    -   [
+          'User changed this input while the file was reading',
+          false
+        ],
+        [
+          3,
+    ...
+        ],
+    -   [
+    -     'The synthetic team contains five people.',
+    -     false
+    -   ]
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0:
+      0: ''
+      1: false
+    1:
+      0: 'What color is the boat?'
+      1: false
+    2:
+      0: 'The boat is blue.'
+      1: false
+    3:
+      0: 'How many people are on the team?'
+      1: false
+    4:
+      0: 'The synthetic team contains five people.'
+      1: false
+    5:
+      0: 'User changed this input while the file was reading'
+      1: false
+    6:
+      0: 3
+      1: false
+    7:
+      0: 128
+      1: false
+    8:
+      0: 30
+      1: false
+    9:
+      0: 'The bicycle is green. The boat is blue.'
+      1: false
+    10:
+      0: 'The synthetic team contains five people.'
+      1: false
+  actual:
+    0:
+      0: ''
+      1: false
+    1:
+      0: 'What color is the boat?'
+      1: false
+    2:
+      0: 'The boat is blue.'
+      1: false
+    3:
+      0: 'User changed this input while the file was reading'
+      1: false
+    4:
+      0: 3
+      1: false
+    5:
+      0: 128
+      1: false
+    6:
+      0: 30
+      1: false
+    7:
+      0: 'The bicycle is green. The boat is blue.'
+      1: false
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/a2/Documents/Codex/2026-10-13/ai-open-source-venture-lab-36/work/rebuild/import-regression-proof/modelarena/tools/test_ui.mjs:198:10)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..10
+# tests 10
+# suites 0
+# pass 7
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 61.009167
+
+exit_code=1

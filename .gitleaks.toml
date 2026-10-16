@@ -1,0 +1,10 @@
+title = "Venture Lab secrets policy"
+[extend]
+useDefault = true
+[[allowlists]]
+description = "Public CPython release signing-key fingerprint in upstream Docker metadata, not a private key"
+condition = "AND"
+targetRules = ["generic-api-key"]
+paths = ['(^|/)evidence/(trivy-image|rebuild/image)\.json$']
+regexTarget = "secret"
+regexes = ['^7169605F62C751356D054A26A821E680E5FA6305$']
