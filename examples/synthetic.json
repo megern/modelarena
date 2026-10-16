@@ -1,0 +1,10 @@
+{
+  "cases": [
+    {
+      "question": "What color is the boat?",
+      "context": "The bicycle is green. The boat is blue.",
+      "expected_answer": "The boat is blue."
+    }
+  ],
+  "repeats": 3
+}

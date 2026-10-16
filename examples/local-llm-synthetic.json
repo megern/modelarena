@@ -1,0 +1,1 @@
+{"adapter":"local_llm","model":"your-loaded-model","cases":[{"question":"What color is the synthetic boat?","context":"The synthetic boat is blue.","expected_answer":"The synthetic boat is blue."}],"repeats":1,"timeout_seconds":30,"max_tokens":128}

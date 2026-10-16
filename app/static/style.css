@@ -1,0 +1,258 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #f3f6fa;
+  color: #1d3149;
+  font:
+    16px/1.5 system-ui,
+    -apple-system,
+    sans-serif;
+}
+header {
+  background: #12283e;
+  color: white;
+  padding: 32px max(22px, calc((100vw - 1180px) / 2));
+  border-bottom: 5px solid #23b5a3;
+}
+header p {
+  max-width: 850px;
+  color: #d9e7f3;
+}
+h1 {
+  margin: 0;
+  font-size: 34px;
+}
+h2 {
+  font-size: 22px;
+  margin-top: 0;
+}
+h3 {
+  margin: 12px 0;
+}
+main {
+  max-width: 1180px;
+  margin: 24px auto;
+  padding: 0 18px;
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 22px;
+}
+.panel {
+  background: #fff;
+  border: 1px solid #d8e0e8;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 22px;
+  overflow: auto;
+}
+.wide {
+  grid-column: 1/-1;
+}
+label {
+  display: block;
+  font-weight: 650;
+  margin-top: 14px;
+}
+label small,
+.hint {
+  display: block;
+  font-size: 13px;
+  color: #586e81;
+  font-weight: 400;
+}
+input:not([type="checkbox"]),
+select,
+textarea {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #90a4b8;
+  border-radius: 6px;
+  color: inherit;
+  background: white;
+  font: inherit;
+  margin-top: 6px;
+}
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+.check {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.check input {
+  width: 18px;
+  height: 18px;
+}
+button,
+.link-button {
+  padding: 10px 16px;
+  border: 1px solid #91a6b8;
+  border-radius: 6px;
+  background: #eef4fa;
+  color: #183953;
+  cursor: pointer;
+  font: 600 14px system-ui;
+}
+button.primary {
+  background: #086f66;
+  color: white;
+  border-color: #086f66;
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: wait;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  align-items: center;
+  margin: 18px 0;
+}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+}
+.metric {
+  padding: 16px;
+  background: #eef5fa;
+  border-radius: 8px;
+}
+.metric strong {
+  display: block;
+  font-size: 26px;
+}
+.metric small {
+  display: block;
+  color: #526b80;
+}
+.notice {
+  background: #edf6f5;
+  border-left: 4px solid #168d80;
+  padding: 12px 16px;
+}
+.error {
+  background: #fff0ec;
+  border-left: 4px solid #bd4327;
+  padding: 12px 16px;
+  color: #8a2b15;
+}
+.finding {
+  border: 1px solid #d6e0e9;
+  border-left: 5px solid #cf8b20;
+  margin: 14px 0;
+  padding: 16px;
+  border-radius: 5px;
+}
+.finding.critical,
+.finding.high {
+  border-left-color: #bf442f;
+}
+.pill {
+  display: inline-block;
+  margin: 3px;
+  padding: 3px 8px;
+  background: #eaf0f6;
+  border-radius: 4px;
+  font-size: 13px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-top: 12px;
+}
+th,
+td {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #e2e8ef;
+  vertical-align: top;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+th {
+  background: #edf3f8;
+}
+pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  background: #eef3f8;
+  padding: 14px;
+}
+details {
+  margin: 14px 0;
+}
+summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.editor-row {
+  border: 1px solid #d2dce6;
+  padding: 14px;
+  margin: 12px 0;
+  border-radius: 7px;
+}
+.status {
+  min-height: 28px;
+  margin: 14px 0;
+}
+footer {
+  font-size: 13px;
+  color: #60778a;
+  padding: 12px 0 36px;
+}
+a {
+  color: #176594;
+}
+header a {
+  color: #d8fff7;
+}
+.two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.empty {
+  padding: 24px;
+  text-align: center;
+  color: #61788e;
+}
+svg {
+  width: 100%;
+  height: 150px;
+}
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #21bbaa;
+  outline-offset: 2px;
+}
+@media (max-width: 850px) {
+  .layout,
+  .two {
+    grid-template-columns: 1fr;
+  }
+  .wide {
+    grid-column: auto;
+  }
+  header {
+    padding: 24px;
+  }
+  h1 {
+    font-size: 29px;
+  }
+  .panel {
+    padding: 18px;
+  }
+}

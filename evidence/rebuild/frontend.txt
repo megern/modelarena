@@ -1,0 +1,88 @@
+TAP version 13
+# Subtest: CSV supports BOM, escaped quotes, embedded newlines, CRLF and empty cells
+ok 1 - CSV supports BOM, escaped quotes, embedded newlines, CRLF and empty cells
+  ---
+  duration_ms: 1.396166
+  type: 'test'
+  ...
+# Subtest: CSV rejects ambiguity and reports the physical data-row position
+ok 2 - CSV rejects ambiguity and reports the physical data-row position
+  ---
+  duration_ms: 0.3255
+  type: 'test'
+  ...
+# Subtest: Numeric inference preserves identifiers and rejects overflow
+ok 3 - Numeric inference preserves identifiers and rejects overflow
+  ---
+  duration_ms: 0.251583
+  type: 'test'
+  ...
+# Subtest: CSV export neutralizes formula cells including whitespace prefixes; negatives stay numeric
+ok 4 - CSV export neutralizes formula cells including whitespace prefixes; negatives stay numeric
+  ---
+  duration_ms: 0.121
+  type: 'test'
+  ...
+# Subtest: Untrusted values are assigned to textContent, never interpreted as HTML
+ok 5 - Untrusted values are assigned to textContent, never interpreted as HTML
+  ---
+  duration_ms: 0.090666
+  type: 'test'
+  ...
+# Subtest: File size check happens before reading and API validation paths are actionable
+ok 6 - File size check happens before reading and API validation paths are actionable
+  ---
+  duration_ms: 0.17125
+  type: 'test'
+  ...
+# Subtest: Delayed actual UI file import cannot replace a newer synthetic sample
+ok 7 - Delayed actual UI file import cannot replace a newer synthetic sample
+  ---
+  duration_ms: 6.170833
+  type: 'test'
+  ...
+# Subtest: Late actual UI file rejection cannot replace newer status
+ok 8 - Late actual UI file rejection cannot replace newer status
+  ---
+  duration_ms: 1.120958
+  type: 'test'
+  ...
+# Subtest: Actual UI accepts an unsuperseded JSON file import
+ok 9 - Actual UI accepts an unsuperseded JSON file import
+  ---
+  duration_ms: 1.9555
+  type: 'test'
+  ...
+# Subtest: Delayed actual UI file import cannot replace a manual field edit
+ok 10 - Delayed actual UI file import cannot replace a manual field edit
+  ---
+  duration_ms: 1.414
+  type: 'test'
+  ...
+# Subtest: CSV preserves explicit all-empty records at the beginning and end
+ok 11 - CSV preserves explicit all-empty records at the beginning and end
+  ---
+  duration_ms: 0.267
+  type: 'test'
+  ...
+# Subtest: CSV preserves quoted empty single/multiple fields and multiline values
+ok 12 - CSV preserves quoted empty single/multiple fields and multiline values
+  ---
+  duration_ms: 0.211375
+  type: 'test'
+  ...
+# Subtest: CSV ignores only blank physical lines and counts empty records toward row bounds
+ok 13 - CSV ignores only blank physical lines and counts empty records toward row bounds
+  ---
+  duration_ms: 4.164292
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 63.022584

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ModelArena</title>
+    <link rel="stylesheet" href="/assets/style.css" />
+  </head>
+  <body>
+    <header>
+      <small>Local benchmark studio · v0.2.0</small>
+      <h1>ModelArena</h1>
+      <p>
+        Compare measured CPU baselines or a locally hosted LLM against a labeled
+        question set.
+      </p>
+      <a href="/guide">User guide</a> · <a href="/docs">API reference</a>
+    </header>
+    <main>
+      <div id="status" class="status" role="status" aria-live="polite">
+        Ready. Sample buttons load synthetic data; nothing runs automatically.
+      </div>
+      <div class="layout">
+        <section class="panel wide">
+          <h2>Question set</h2>
+          <p class="hint">
+            Each case needs a question, context and expected answer. Exact-match
+            scoring ignores punctuation and case.
+          </p>
+          <div class="actions">
+            <button id="sample">Load synthetic cases</button
+            ><button id="add-case">Add case</button>
+          </div>
+          <label
+            >Import CSV or JSON
+            <small
+              >CSV headers: question, context, expected_answer. JSON: request
+              object or case array. Max 50 cases.</small
+            ><input
+              type="file"
+              id="import"
+              accept=".json,.csv,application/json,text/csv"
+          /></label>
+          <div id="cases"></div>
+        </section>
+        <section class="panel">
+          <h2>Run settings</h2>
+          <label
+            >Adapter<select id="adapter">
+              <option value="baselines">Two CPU extractive baselines</option>
+              <option value="local_llm">Local OpenAI-compatible LLM</option>
+            </select></label
+          >
+          <p class="hint">
+            Baselines select sentences; they do not perform LLM inference.
+          </p>
+          <label
+            >Local model name<input id="model" value="local-model"
+          /></label>
+          <p class="hint">
+            For local_llm, the server operator sets MODELARENA_LLM_URL. No
+            remote paid provider is supported.
+          </p>
+          <div class="two">
+            <label
+              >Repetitions per case<input
+                id="repeats"
+                type="number"
+                value="3"
+                min="1"
+                max="10" /></label
+            ><label
+              >Output token limit<input
+                id="max-tokens"
+                type="number"
+                value="128"
+                min="1"
+                max="2048"
+            /></label>
+          </div>
+          <label
+            >Per-request timeout, seconds<input
+              id="timeout"
+              type="number"
+              value="30"
+              min="1"
+              max="120"
+          /></label>
+          <div class="actions">
+            <button id="run" class="primary">Run benchmark</button
+            ><button id="export-input">Export benchmark setup</button
+            ><button id="export-report">Export session results</button>
+          </div>
+          <p class="hint">
+            Runs are sequential. Larger case sets and repeats can take minutes.
+            The browser keeps comparisons only until this page is refreshed.
+          </p>
+        </section>
+        <section class="panel">
+          <h2>Session comparisons</h2>
+          <div id="session" class="empty">
+            Run baselines, then change adapters or models to compare observed
+            results.
+          </div>
+          <button id="clear-session">Clear session results</button>
+        </section>
+        <section class="panel wide">
+          <h2>Latest benchmark details</h2>
+          <div id="results" class="empty">
+            No run yet. Failures will appear alongside successful counts.
+          </div>
+        </section>
+      </div>
+      <footer>
+        CPU-first · no external assets · inputs are sent to this app server when
+        analyzed · no automatic persistence. Treat reports as exploratory
+        evidence.
+      </footer>
+    </main>
+    <script type="module" src="/assets/ui.mjs"></script>
+  </body>
+</html>

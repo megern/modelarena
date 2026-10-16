@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=70"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "modelarena"
+version = "0.2.0"
+description = "Independent CPU-first AI engineering tool"
+requires-python = ">=3.12"
+license = "MIT"
+dependencies = ["fastapi==0.143.0", "pydantic==2.14.1", "uvicorn==0.54.0", "httpx==0.28.1"]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.setuptools.package-data]
+app = ["index.html", "USER_GUIDE.md", "static/*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

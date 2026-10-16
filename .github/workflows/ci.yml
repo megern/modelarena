@@ -1,0 +1,40 @@
+name: CI
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install --require-hashes -r requirements-dev.lock
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tools/test_ui.mjs
+      - run: python -m pytest -q
+      - run: python -m bandit -q -r app
+      - run: python -m pip_audit --disable-pip --no-deps --require-hashes -r requirements.lock
+      - name: Secrets scan
+        run: docker run --rm -v "$PWD:/repo:ro" -v "$RUNNER_TEMP:/reports" zricethezav/gitleaks@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f dir /repo --config /repo/.gitleaks.toml --redact --report-format json --report-path /reports/gitleaks.json
+      - name: Secret scan diagnostics
+        if: failure()
+        run: python -c "import json,os,pathlib; p=pathlib.Path(os.environ['RUNNER_TEMP'])/'gitleaks.json'; print([{'file':i['File'],'line':i['StartLine'],'rule':i['RuleID']} for i in json.loads(p.read_text())] if p.exists() else [])"
+      - run: docker build -t application:test .
+      - name: Container vulnerability gate
+        run: |
+          docker save -o /tmp/application-image.tar application:test
+          docker run --rm -v /tmp/application-image.tar:/scan/image.tar:ro aquasec/trivy@sha256:af6acf9a6b85dfe389a1941505c0ce9efef52a4719635e1a962f022a3d855daa image --input /scan/image.tar --scanners vuln --severity MEDIUM,HIGH,CRITICAL --exit-code 1
+      - name: Container HTTP integration
+        run: |
+          docker run -d --name application-test --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges --memory 512m --cpus 1 -p 127.0.0.1:8000:8000 application:test
+          python tools/smoke.py http://127.0.0.1:8000
+      - if: always()
+        run: docker rm -f application-test || true
