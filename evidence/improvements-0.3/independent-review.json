@@ -1,0 +1,216 @@
+{
+  "application": "modelarena",
+  "version": "0.3.0",
+  "reviewed_at_utc": "2026-10-17T02:36:43.144870+00:00",
+  "reviewer": "Independent AI scientific/security/QA reviewer build_science, different from this application author; no human audit claimed",
+  "production_modified_by_reviewer": false,
+  "status": "ACCEPT_LOCAL_SCOPE",
+  "confidence": "moderate for bounded documented local research scope",
+  "issues": [
+    {
+      "id": "MODEL-03-01",
+      "severity": "P2",
+      "status": "resolved",
+      "summary": "Valid deeply nested JSON from local model server causes HTTP500 instead of a sanitized failed-attempt result.",
+      "reproduction": "tests/test_independent03.py::test_independent_nested_model_json_is_reported_as_failure uses a real httpx MockTransport response containing 10,000 nested JSON arrays (20,001 bytes, below 1MiB cap). json.loads raises uncaught RecursionError.",
+      "expected": "Successful HTTP benchmark response with failed_runs=1, successful_runs=0, null success-only scores and sanitized failure detail.",
+      "actual": "HTTP500",
+      "production_location": "app/core.py local_completion JSON decode and analyze adapter exception boundary",
+      "resolution": "Author now catches RecursionError as a sanitized adapter attempt failure; independent deeply nested response regression passes."
+    }
+  ],
+  "scientific_assessment": "Independent deterministic clock test verifies successful adapter latency [1,4]ms with failed attempt excluded, success-only versus all-attempt token F1/exact-match denominators, completion ratio and last successful per-case prediction. A deceptive remote hostname is rejected before transport creation. A malformed nested response previously violated failure accounting and has now been repaired. Author repair for nested JSON independently revalidated: malformed model data now records a failed attempt without HTTP500. The full final suite includes a genuine ephemeral loopback HTTP synthetic model server; this is transport validation, not evaluation of trained model weights.",
+  "residual_limits": [
+    "Built-in baselines are extractive functions, not trained language models. Local model quality depends on operator server and labels.",
+    "Maximum 50 cases \u00d7 10 repeats \u00d7 120-second local timeouts can produce long operator-requested jobs; no overall run deadline is enforced."
+  ],
+  "checks": [
+    {
+      "name": "independent-pytest-final",
+      "exit_code": 0,
+      "evidence": "evidence/improvements-0.3/independent-pytest-final.txt"
+    },
+    {
+      "name": "independent-frontend-final",
+      "exit_code": 0,
+      "evidence": "evidence/improvements-0.3/independent-frontend-final.txt"
+    },
+    {
+      "name": "independent-bandit-final",
+      "exit_code": 0,
+      "evidence": "evidence/improvements-0.3/independent-bandit-final.txt"
+    }
+  ],
+  "source_hashes_sha256": [
+    {
+      "sha256": "e74496d32026daa50450156b4630fe9966d2580a07455399763a9ae450a5b864",
+      "path": ".github/workflows/ci.yml"
+    },
+    {
+      "sha256": "11e7bdd058b64cd74b6fe90a9687e6a9e4a5644139e2c5bdc4d27e7e1051b944",
+      "path": "Dockerfile"
+    },
+    {
+      "sha256": "8c6910572884dd18148b3393115d866030ba368ce56661a70ba7dec1d018bffc",
+      "path": "README.md"
+    },
+    {
+      "sha256": "5ee17fa1bfe97073ffbd179145fd7b6538a54182435c1178b80e5d012c37a7e2",
+      "path": "app/USER_GUIDE.md"
+    },
+    {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "path": "app/__init__.py"
+    },
+    {
+      "sha256": "e5728f20acd6a1fdc733bff08fedaafdbe5313c15a4310a239f31b27ba5ad1f0",
+      "path": "app/core.py"
+    },
+    {
+      "sha256": "d1eda2150e58503114c6cf4ba36d5958aa7e2cfbb496fc0d8026b5c9da4beb77",
+      "path": "app/guard.py"
+    },
+    {
+      "sha256": "bec978fed284d24defab7668ffcdb2bc83bc4befc90c5e74e8f2e948b06741ff",
+      "path": "app/index.html"
+    },
+    {
+      "sha256": "57b4f733746829a31f1d99cb83f223cc428717f4dbdfdc5c659f411aa83cffe6",
+      "path": "app/main.py"
+    },
+    {
+      "sha256": "6410a7d942d231f320cf67bad5b575793d40db2c025d66d01a6eb4f5effef3a9",
+      "path": "app/static/common.mjs"
+    },
+    {
+      "sha256": "31edaeb85459bc32652a37b11a7f5c5f716f16915fde7fe607f1ac9e3b7367c3",
+      "path": "app/static/style.css"
+    },
+    {
+      "sha256": "86f858134eb743e2bca1228cea706a2fe13bc7fc8e5e25e8667d5c750cffeb40",
+      "path": "app/static/ui.mjs"
+    },
+    {
+      "sha256": "eb36c7a3f8efb6ebc8db553c44ec33bcdd7c16837a027bd21263dc5bc2189ffe",
+      "path": "compose.yaml"
+    },
+    {
+      "sha256": "5ee17fa1bfe97073ffbd179145fd7b6538a54182435c1178b80e5d012c37a7e2",
+      "path": "docs/USER_GUIDE.md"
+    },
+    {
+      "sha256": "e09f96bb5ca549f7b8cbbce172468220cb38fed44d0ffdf86a79afd02d26a9b9",
+      "path": "pyproject.toml"
+    },
+    {
+      "sha256": "18830e9749026ba35b5e5d6144219148ad29df304b3bb2ff4725a5ecae88578e",
+      "path": "requirements-dev.lock"
+    },
+    {
+      "sha256": "cc2d915f3530f2b16ab605d633b94e6c8784ee70f799daf639dd30deef2361de",
+      "path": "requirements-dev.txt"
+    },
+    {
+      "sha256": "c1866e869f80a4b34dfc25417d5b4747325619732d79758167352405b71c6d56",
+      "path": "requirements.lock"
+    },
+    {
+      "sha256": "feb350d32f3de116bda18b133dbd26793e2891dbe58ba16f57b977b1d79be949",
+      "path": "requirements.txt"
+    },
+    {
+      "sha256": "76ddcb2895c34b9a94c6fa743628488534d255a993178b4d4af34f03e3615fff",
+      "path": "tests/test_api.py"
+    },
+    {
+      "sha256": "6165a89a22597a4ee363616803b1321fa3cd9f7488b08ab939c87c2d4935785e",
+      "path": "tests/test_core.py"
+    },
+    {
+      "sha256": "36cb1928903b01e4cd36bbf33e8166a34bde9b1ec1996830295caef23f9916a2",
+      "path": "tests/test_guard_review.py"
+    },
+    {
+      "sha256": "d1dd9a4cd558600774a0d341d23a06006742d6609d99552950aa81711108ec0d",
+      "path": "tests/test_improvements_03.py"
+    },
+    {
+      "sha256": "ab3a4186e580e262d723349a8be9c6d8b2ae5e936e18313f60aeef4a51e0b138",
+      "path": "tests/test_independent03.py"
+    },
+    {
+      "sha256": "29acf3115d6a6576e4623231658668254c3633666ef3660b206cf2f5587d7780",
+      "path": "tests/test_input_limits.py"
+    },
+    {
+      "sha256": "0a674fb62d9882b1f4d8efd2cd13b6d9fedb02387f9880c17c8ee7cf5ae66ae8",
+      "path": "tests/test_rebuild_interface.py"
+    },
+    {
+      "sha256": "074d97d8771bd4e0854403eb40efa65e90c84d75eaf8d3bdab0b40237f146aed",
+      "path": "tests/test_review.py"
+    },
+    {
+      "sha256": "ecedd0d5c9208a193cea960d43f084b49acd0a0dcd20e709cb2c755675769fd3",
+      "path": "tools/smoke.py"
+    },
+    {
+      "sha256": "343780e63587fc1fd1c6d7406bdad91e794624d663764beb58658cbf100370d7",
+      "path": "tools/test_ui.mjs"
+    },
+    {
+      "sha256": "7a69da2c87b8670c5f68cdec85fa2ce7a58e0b7700b5e681f151d53f826fbd6e",
+      "path": "tools/ui-test-dom.mjs"
+    }
+  ],
+  "source_stable_during_checks": true,
+  "source_bundle_sha256": "69fc226d1f9a6c8b1f16725ed600a097b055cfc67f4bc5a45af0700ac678fe18",
+  "release_gates_not_claimed": [
+    "interactive browser review",
+    "dependency/secret audit",
+    "remote CI",
+    "GitHub publication",
+    "independent container backend-file hash inspection"
+  ],
+  "review_history": [
+    {
+      "reviewed_at_utc": "2026-10-16T22:31:05.480871+00:00",
+      "status": "REQUIRES_FIX",
+      "issues": [
+        {
+          "id": "MODEL-03-01",
+          "severity": "P2",
+          "status": "open",
+          "summary": "Valid deeply nested JSON from local model server causes HTTP500 instead of a sanitized failed-attempt result.",
+          "reproduction": "tests/test_independent03.py::test_independent_nested_model_json_is_reported_as_failure uses a real httpx MockTransport response containing 10,000 nested JSON arrays (20,001 bytes, below 1MiB cap). json.loads raises uncaught RecursionError.",
+          "expected": "Successful HTTP benchmark response with failed_runs=1, successful_runs=0, null success-only scores and sanitized failure detail.",
+          "actual": "HTTP500",
+          "production_location": "app/core.py local_completion JSON decode and analyze adapter exception boundary"
+        }
+      ],
+      "checks": [
+        {
+          "name": "independent-pytest",
+          "exit_code": 1,
+          "evidence": "evidence/improvements-0.3/independent-pytest.txt"
+        },
+        {
+          "name": "independent-frontend",
+          "exit_code": 0,
+          "evidence": "evidence/improvements-0.3/independent-frontend.txt"
+        },
+        {
+          "name": "independent-bandit",
+          "exit_code": 0,
+          "evidence": "evidence/improvements-0.3/independent-bandit.txt"
+        }
+      ],
+      "source_bundle_sha256": "5421d6ce7b468493fdb07bf6b43c62f68b1254b1a6f663c2d486f164b41ddd1d"
+    }
+  ],
+  "runtime_review": {
+    "status": "PASS",
+    "evidence": "evidence/improvements-0.3/independent-http.json"
+  },
+  "source_hashes_encoding": "Ordered records with sha256 before path; all per-file hashes unchanged. source_bundle_sha256 remains the SHA256 of canonical JSON path-to-hash mapping with sorted keys used at review time."
+}

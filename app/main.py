@@ -4,7 +4,7 @@ from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from .core import BenchmarkRequest, analyze
 
-app = FastAPI(title="ModelArena", version="0.2.0")
+app = FastAPI(title="ModelArena", version="0.3.0")
 
 
 @app.get("/health")

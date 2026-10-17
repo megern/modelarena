@@ -1,0 +1,129 @@
+{
+  "application": "modelarena",
+  "reviewed_at_utc": "2026-10-17T02:36:43.087966+00:00",
+  "base_url": "http://127.0.0.1:18207",
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "expected_source_sha256": "bec978fed284d24defab7668ffcdb2bc83bc4befc90c5e74e8f2e948b06741ff",
+      "served_sha256": "bec978fed284d24defab7668ffcdb2bc83bc4befc90c5e74e8f2e948b06741ff",
+      "matches": true
+    },
+    {
+      "path": "/guide",
+      "status": 200,
+      "expected_source_sha256": "5ee17fa1bfe97073ffbd179145fd7b6538a54182435c1178b80e5d012c37a7e2",
+      "served_sha256": "5ee17fa1bfe97073ffbd179145fd7b6538a54182435c1178b80e5d012c37a7e2",
+      "matches": true
+    },
+    {
+      "path": "/assets/ui.mjs",
+      "status": 200,
+      "expected_source_sha256": "86f858134eb743e2bca1228cea706a2fe13bc7fc8e5e25e8667d5c750cffeb40",
+      "served_sha256": "86f858134eb743e2bca1228cea706a2fe13bc7fc8e5e25e8667d5c750cffeb40",
+      "matches": true
+    },
+    {
+      "path": "/assets/common.mjs",
+      "status": 200,
+      "expected_source_sha256": "6410a7d942d231f320cf67bad5b575793d40db2c025d66d01a6eb4f5effef3a9",
+      "served_sha256": "6410a7d942d231f320cf67bad5b575793d40db2c025d66d01a6eb4f5effef3a9",
+      "matches": true
+    },
+    {
+      "path": "/assets/style.css",
+      "status": 200,
+      "expected_source_sha256": "31edaeb85459bc32652a37b11a7f5c5f716f16915fde7fe607f1ac9e3b7367c3",
+      "served_sha256": "31edaeb85459bc32652a37b11a7f5c5f716f16915fde7fe607f1ac9e3b7367c3",
+      "matches": true
+    }
+  ],
+  "source_match_scope": "Exact bytes for served index, guide and ui/common/style assets; API version and functional new-feature behavior. This does not expose or independently hash container backend Python files.",
+  "feature_probe": {
+    "probe": "real CPU benchmark HTTP, measured latency and repeated-token F1",
+    "results": [
+      {
+        "adapter": "first_sentence",
+        "mean_latency_ms": 0.015979,
+        "median_latency_ms": 0.015979,
+        "min_latency_ms": 0.002833,
+        "max_latency_ms": 0.029125,
+        "p95_latency_ms": 0.029125,
+        "exact_match_accuracy": 0.0,
+        "token_f1": 0.6666666666666666,
+        "predictions": [
+          "Cat cat."
+        ],
+        "case_results": [
+          {
+            "case_index": 0,
+            "successful_runs": 2,
+            "failed_runs": 0,
+            "attempted_runs": 2,
+            "completion_ratio": 1.0,
+            "all_attempt_exact_match_accuracy": 0.0,
+            "all_attempt_token_f1": 0.6666666666666666,
+            "exact_match_accuracy": 0.0,
+            "token_f1": 0.6666666666666666,
+            "errors": [],
+            "mean_latency_ms": 0.015979,
+            "median_latency_ms": 0.015979,
+            "min_latency_ms": 0.002833,
+            "max_latency_ms": 0.029125,
+            "p95_latency_ms": 0.029125
+          }
+        ],
+        "successful_runs": 2,
+        "failed_runs": 0,
+        "measured_runs": 2,
+        "attempted_runs": 2,
+        "completion_ratio": 1.0,
+        "all_attempt_exact_match_accuracy": 0.0,
+        "all_attempt_token_f1": 0.6666666666666666,
+        "errors": []
+      },
+      {
+        "adapter": "lexical_retrieval",
+        "mean_latency_ms": 0.07631199999999999,
+        "median_latency_ms": 0.07631199999999999,
+        "min_latency_ms": 0.005791,
+        "max_latency_ms": 0.146833,
+        "p95_latency_ms": 0.146833,
+        "exact_match_accuracy": 0.0,
+        "token_f1": 0.6666666666666666,
+        "predictions": [
+          "Cat cat."
+        ],
+        "case_results": [
+          {
+            "case_index": 0,
+            "successful_runs": 2,
+            "failed_runs": 0,
+            "attempted_runs": 2,
+            "completion_ratio": 1.0,
+            "all_attempt_exact_match_accuracy": 0.0,
+            "all_attempt_token_f1": 0.6666666666666666,
+            "exact_match_accuracy": 0.0,
+            "token_f1": 0.6666666666666666,
+            "errors": [],
+            "mean_latency_ms": 0.07631199999999999,
+            "median_latency_ms": 0.07631199999999999,
+            "min_latency_ms": 0.005791,
+            "max_latency_ms": 0.146833,
+            "p95_latency_ms": 0.146833
+          }
+        ],
+        "successful_runs": 2,
+        "failed_runs": 0,
+        "measured_runs": 2,
+        "attempted_runs": 2,
+        "completion_ratio": 1.0,
+        "all_attempt_exact_match_accuracy": 0.0,
+        "all_attempt_token_f1": 0.6666666666666666,
+        "errors": []
+      }
+    ]
+  },
+  "status": "PASS"
+}

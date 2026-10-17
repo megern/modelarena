@@ -231,3 +231,67 @@ test("CSV ignores only blank physical lines and counts empty records toward row 
   assert.equal(parseCSV("x,y\n" + ",\n".repeat(5000)).length, 5000);
   assert.throws(() => parseCSV("x,y\n" + ",\n".repeat(5001)), /5000/);
 });
+
+test("Benchmark UI shows F1, per-case completions, latency distribution and denominator labels", async () => {
+  const { readFile: readLocal } = await import("node:fs/promises");
+  const { documentFromHTML } = await import("./ui-test-dom.mjs");
+  globalThis.document = documentFromHTML(
+    await readLocal(new URL("../app/index.html", import.meta.url), "utf8")
+  );
+  await import("../app/static/ui.mjs?feature=benchmark-metrics");
+  document.getElementById("sample").onclick();
+  const originalFetch = globalThis.fetch;
+  // Synthetic API response for actual rendering handlers; these are not measured benchmark claims.
+  const result = {
+    adapter: "first_sentence",
+    successful_runs: 1,
+    attempted_runs: 2,
+    failed_runs: 1,
+    completion_ratio: 0.5,
+    exact_match_accuracy: 0,
+    token_f1: 2 / 3,
+    all_attempt_exact_match_accuracy: 0,
+    all_attempt_token_f1: 1 / 3,
+    mean_latency_ms: 4,
+    median_latency_ms: 4,
+    min_latency_ms: 4,
+    max_latency_ms: 4,
+    p95_latency_ms: 4,
+    errors: [],
+    predictions: ["Blue.", null],
+    case_results: [
+      {
+        case_index: 0,
+        successful_runs: 1,
+        attempted_runs: 2,
+        failed_runs: 1,
+        exact_match_accuracy: 0,
+        token_f1: 2 / 3,
+        all_attempt_token_f1: 1 / 3,
+        median_latency_ms: 4,
+        min_latency_ms: 4,
+        max_latency_ms: 4
+      }
+    ]
+  };
+  globalThis.fetch = async () => ({
+    ok: true,
+    json: async () => ({ results: [result], limitations: [], dataset_size: 2 })
+  });
+  try {
+    await document.getElementById("run").onclick();
+    const text = document.getElementById("results").textContent;
+    assert.match(text, /Token F1/);
+    assert.match(text, /All-attempt token F1/);
+    assert.match(text, /Median latency/);
+    assert.match(text, /1\/2/);
+    const session = document.getElementById("session");
+    const table = session.children.find((child) => child.tagName === "table");
+    const body = table.children.find((child) => child.tagName === "tbody");
+    assert.equal(body.children[0].children.length, 7);
+    assert.match(session.textContent, /success only/);
+  } finally {
+    globalThis.fetch = originalFetch;
+    delete globalThis.document;
+  }
+});

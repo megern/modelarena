@@ -1,6 +1,6 @@
 # ModelArena
 
-Version 0.2.0 · CPU local tool · MIT
+Version 0.3.0 · CPU local tool · MIT
 
 ModelArena is a small local benchmark studio: edit or import a labeled question set, compare two CPU extractive baselines, or call your own local OpenAI-compatible LLM. It reports actual measured latency, exact-match accuracy, completion counts, per-run failures and case-level predictions. Session comparisons retain the original input for each run.
 
@@ -42,7 +42,7 @@ python -m bandit -q -r app
 python -m pip_audit -r requirements.txt
 ```
 
-Node 22 is used for browser-independent CSV/export logic tests; it is not needed to serve the application. Python tests include actual core calculations, validation failures and in-process HTTP integration. They do not establish Docker deployment or browser interaction success. Rebuild evidence belongs in `evidence/rebuild/`; earlier evidence is historical and does not validate this version. CI includes locked dependency installation, test/security gates, image scanning and secret scanning. Branch protection and release publication remain separate operator actions; no publication success is claimed by this README.
+Node 22 is used for browser-independent CSV/export logic tests; it is not needed to serve the application. Python tests include actual core calculations, validation failures and in-process HTTP integration. They do not establish Docker deployment or browser interaction success. Fresh 0.3.0 evidence belongs in `evidence/improvements-0.3/`. `evidence/rebuild/` records the earlier 0.2.0 rebuild; it does not validate this version. CI includes locked dependency installation, test/security gates, image scanning and secret scanning. Branch protection and release publication remain separate operator actions; no publication success is claimed by this README.
 
 MIT licensed. No paid service or new model download is required. Data is processed by this app server when you run an analysis. Inputs/results are not automatically saved by this application. JSON exports may contain the original input and sensitive values; inspect them before sharing. There is no authentication or rate limiter. Keep the localhost binding or supply access controls before exposing the server.
 
@@ -55,3 +55,13 @@ API example using explicitly synthetic data:
 ```sh
 curl --fail-with-body http://localhost:8000/analyze -H 'Content-Type: application/json' --data-binary @examples/synthetic.json
 ```
+
+## Quality and completion diagnostics (0.3.0)
+
+Benchmark results now include **token F1**, median/minimum/maximum successful-run latency, completion ratio, and per-case success/failure counts, scores, errors and latency summaries. The session comparison table keeps these metrics with each original run. Full JSON exports preserve the same API details.
+
+Token F1 uses a multiset of the same case-folded `\w+` tokens used for exact match. It is `2 × overlapping token occurrences / (predicted token count + reference token count)`. Repeated tokens count, so prediction `cat cat` against reference `cat` scores 2/3. Case and punctuation are ignored. If either sequence has no tokens, F1 is zero unless **both** have no tokens, which scores one. A whitespace-only prediction against a normal reference therefore scores zero; punctuation-only reference and prediction can score one. References still must be nonblank text. Token F1 is lexical agreement, not semantic or factual correctness.
+
+Existing `exact_match_accuracy` and new `token_f1` average **successful runs only**. New `all_attempt_exact_match_accuracy` and `all_attempt_token_f1` count each failed attempt as zero, and `completion_ratio` is successful / attempted. A model with one successful perfect answer and three failed attempts has success-only accuracy 1, all-attempt accuracy .25, and completion ratio .25. Per-case metrics expose the same denominators. When all requests fail, success-only scores and latencies are null, while all-attempt scores and completion ratio are zero. Failure messages remain sanitized and do not include raw model-server responses.
+
+Timing now explicitly excludes score computation. Mean/median/min/max and nearest-rank p95 cover successful adapter calls only. Failed attempts do not receive invented latency or quality values. No remote host relaxation, new model download, paid service or model-quality claim is introduced.
