@@ -1,3 +1,5 @@
+from collections import Counter
+import math
 import re
 import time
 import statistics
@@ -115,6 +117,27 @@ def local_completion(case, req):
     return content
 
 
+def token_f1(prediction: str, expected: str):
+    predicted, reference = Counter(words(prediction)), Counter(words(expected))
+    if not predicted or not reference:
+        return 1.0 if not predicted and not reference else 0.0
+    overlap = sum((predicted & reference).values())
+    return 2.0 * overlap / (sum(predicted.values()) + sum(reference.values()))
+
+
+def latency_summary(times):
+    ordered = sorted(times)
+    return {
+        "mean_latency_ms": statistics.mean(times) if times else None,
+        "median_latency_ms": statistics.median(times) if times else None,
+        "min_latency_ms": min(times) if times else None,
+        "max_latency_ms": max(times) if times else None,
+        "p95_latency_ms": ordered[max(0, math.ceil(0.95 * len(ordered)) - 1)]
+        if ordered
+        else None,
+    }
+
+
 def analyze(req: BenchmarkRequest):
     results = []
     methods = (
@@ -123,53 +146,86 @@ def analyze(req: BenchmarkRequest):
         else ["local_llm"]
     )
     for method in methods:
-        times = []
-        predictions = []
-        scores = []
-        errors = []
+        times, predictions, scores, f1_scores, errors, case_results = (
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+        )
         for index, case in enumerate(req.cases):
             pred = None
+            case_times, case_scores, case_f1, case_errors = [], [], [], []
             for repeat in range(req.repeats):
                 start = time.perf_counter_ns()
                 try:
-                    pred = (
+                    answer = (
                         local_completion(case, req)
                         if method == "local_llm"
                         else predict(case, method)
                     )
-                    scores.append(float(words(case.expected_answer) == words(pred)))
-                    times.append((time.perf_counter_ns() - start) / 1e6)
+                    elapsed = (time.perf_counter_ns() - start) / 1e6
+                    # Scoring is outside measured adapter latency.
+                    exact = float(words(case.expected_answer) == words(answer))
+                    f1 = token_f1(answer, case.expected_answer)
+                    pred = answer
+                    times.append(elapsed)
+                    case_times.append(elapsed)
+                    scores.append(exact)
+                    case_scores.append(exact)
+                    f1_scores.append(f1)
+                    case_f1.append(f1)
                 except (
                     httpx.HTTPError,
                     ValueError,
                     KeyError,
                     IndexError,
                     TypeError,
+                    RecursionError,
                 ) as exc:
-                    errors.append(
-                        {
-                            "case_index": index,
-                            "repeat": repeat,
-                            "error_type": type(exc).__name__,
-                            "message": "Local model request failed; verify operator configuration and server response.",
-                        }
-                    )
+                    failure = {
+                        "case_index": index,
+                        "repeat": repeat,
+                        "error_type": type(exc).__name__,
+                        "message": "Local model request failed; verify operator configuration and server response.",
+                    }
+                    errors.append(failure)
+                    case_errors.append(failure)
             predictions.append(pred)
-        ordered = sorted(times)
+            case_results.append(
+                {
+                    "case_index": index,
+                    "successful_runs": len(case_times),
+                    "failed_runs": len(case_errors),
+                    "attempted_runs": req.repeats,
+                    "completion_ratio": len(case_times) / req.repeats,
+                    "all_attempt_exact_match_accuracy": sum(case_scores) / req.repeats,
+                    "all_attempt_token_f1": sum(case_f1) / req.repeats,
+                    "exact_match_accuracy": statistics.mean(case_scores)
+                    if case_scores
+                    else None,
+                    "token_f1": statistics.mean(case_f1) if case_f1 else None,
+                    "errors": case_errors,
+                    **latency_summary(case_times),
+                }
+            )
         results.append(
             {
                 "adapter": method,
-                "mean_latency_ms": statistics.mean(times) if times else None,
-                "p95_latency_ms": ordered[
-                    max(0, __import__("math").ceil(0.95 * len(ordered)) - 1)
-                ]
-                if ordered
-                else None,
+                **latency_summary(times),
                 "exact_match_accuracy": statistics.mean(scores) if scores else None,
+                "token_f1": statistics.mean(f1_scores) if f1_scores else None,
                 "predictions": predictions,
+                "case_results": case_results,
                 "successful_runs": len(times),
+                "failed_runs": len(errors),
                 "measured_runs": len(times),
                 "attempted_runs": len(req.cases) * req.repeats,
+                "completion_ratio": len(times) / (len(req.cases) * req.repeats),
+                "all_attempt_exact_match_accuracy": sum(scores)
+                / (len(req.cases) * req.repeats),
+                "all_attempt_token_f1": sum(f1_scores) / (len(req.cases) * req.repeats),
                 "errors": errors,
             }
         )
@@ -178,8 +234,9 @@ def analyze(req: BenchmarkRequest):
         "dataset_size": len(req.cases),
         "limitations": [
             "Built-in baselines are extractive CPU methods, not LLMs. local_llm calls an operator-supplied local OpenAI-compatible server via numeric loopback or the fixed Docker host bridge.",
-            "Timings include adapter execution and local HTTP round trips for local_llm, and vary by machine.",
-            "Exact match ignores case and punctuation. Accuracy covers successful runs only; check errors and successful_runs.",
-            "Synthetic labels and transport tests do not establish real model quality. No model weights are bundled.",
+            "Latency includes adapter execution and local HTTP round trips, excludes scoring, and varies by machine. Failed attempts have no successful-run latency.",
+            "Exact match and multiset token F1 ignore case and punctuation. Empty token sequences score F1 one only when both sides have no tokens, otherwise zero.",
+            "Existing accuracy and token_f1 fields use successful runs only. all_attempt fields count failed runs as zero; completion_ratio exposes the denominator.",
+            "Synthetic labels do not establish real model quality. No model weights are bundled.",
         ],
     }

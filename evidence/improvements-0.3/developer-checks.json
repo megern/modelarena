@@ -1,0 +1,16 @@
+{
+  "version": "0.3.0",
+  "application": "modelarena",
+  "developer_checks": {
+    "python_tests_passed": 30,
+    "node_tests_passed": 14,
+    "bandit_exit_code": 0
+  },
+  "evidence_scope": "Automated developer validation. Node UI handlers use a minimal DOM adapter and synthetic protocol fixtures, not browser acceptance. ModelArena Python HTTP transport test uses an explicitly synthetic local server, not real model inference.",
+  "pending": [
+    "Independent review",
+    "Docker HTTP runtime and real-browser acceptance by orchestrator",
+    "Fresh dependency, secret and image security gates",
+    "CI and release verification"
+  ]
+}

@@ -6,7 +6,7 @@ client = TestClient(app)
 def test_task_interface_and_local_assets_are_served():
     response = client.get("/")
     assert response.status_code == 200
-    assert "v0.2.0" in response.text
+    assert "v0.3.0" in response.text
     assert "sample" in response.text
     assert "/assets/ui.mjs" in response.text
     assert "cdn" not in response.text.lower()
@@ -18,7 +18,7 @@ def test_task_interface_and_local_assets_are_served():
 def test_served_guide_documents_methods_and_current_version():
     guide = client.get("/guide")
     assert guide.status_code == 200
-    assert "0.2.0" in guide.text
+    assert "0.3.0" in guide.text
     assert "synthetic" in guide.text.lower()
     assert "Troubleshooting" in guide.text or "troubleshooting" in guide.text
-    assert app.version == "0.2.0"
+    assert app.version == "0.3.0"

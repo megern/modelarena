@@ -147,8 +147,8 @@ export function errorMessage(data) {
       .join("\n");
   return String(data.detail || "Request failed.");
 }
-export async function analyze(payload) {
-  const response = await fetch("/analyze", {
+export async function analyze(payload, endpoint = "/analyze") {
+  const response = await fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
@@ -191,7 +191,7 @@ export function setupDownloads(getInput, getReport, prefix) {
       JSON.stringify(
         {
           application: prefix,
-          version: "0.2.0",
+          version: "0.3.0",
           generated_at: new Date().toISOString(),
           ...r
         },

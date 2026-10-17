@@ -123,7 +123,9 @@ function drawSession() {
       "Run / model",
       "Adapter",
       "Successful / attempted",
-      "Exact match",
+      "Exact match (success only)",
+      "Token F1 (success only)",
+      "All-attempt F1",
       "Mean ms"
     ],
     session.flatMap((run, i) =>
@@ -132,6 +134,8 @@ function drawSession() {
         r.adapter,
         r.successful_runs + "/" + r.attempted_runs,
         percent(r.exact_match_accuracy),
+        percent(r.token_f1),
+        percent(r.all_attempt_token_f1),
         number(r.mean_latency_ms)
       ])
     )
@@ -156,6 +160,34 @@ function render(r, request) {
       percent(result.exact_match_accuracy),
       "Successful runs only"
     );
+    metric(
+      m,
+      "Token F1",
+      percent(result.token_f1),
+      "Successful runs only; multiset token overlap"
+    );
+    metric(m, "Median latency", number(result.median_latency_ms) + " ms");
+    metric(
+      m,
+      "Minimum / maximum",
+      number(result.min_latency_ms) +
+        " / " +
+        number(result.max_latency_ms) +
+        " ms"
+    );
+    metric(m, "Completion ratio", percent(result.completion_ratio));
+    metric(
+      m,
+      "All-attempt exact match",
+      percent(result.all_attempt_exact_match_accuracy),
+      "Failures count as zero"
+    );
+    metric(
+      m,
+      "All-attempt token F1",
+      percent(result.all_attempt_token_f1),
+      "Failures count as zero"
+    );
     metric(m, "Mean latency", number(result.mean_latency_ms) + " ms");
     metric(m, "p95 latency", number(result.p95_latency_ms) + " ms");
     section.append(m);
@@ -179,6 +211,29 @@ function render(r, request) {
         ])
       );
     }
+    table(
+      section,
+      [
+        "Case",
+        "Successful / attempted",
+        "Failures",
+        "Exact match",
+        "Token F1 (success only)",
+        "All-attempt F1",
+        "Median ms",
+        "Min / max ms"
+      ],
+      result.case_results.map((item) => [
+        item.case_index + 1,
+        `${item.successful_runs}/${item.attempted_runs}`,
+        item.failed_runs,
+        percent(item.exact_match_accuracy),
+        percent(item.token_f1),
+        percent(item.all_attempt_token_f1),
+        number(item.median_latency_ms),
+        `${number(item.min_latency_ms)} / ${number(item.max_latency_ms)}`
+      ])
+    );
     table(
       section,
       ["Case", "Question", "Expected answer", "Last successful prediction"],

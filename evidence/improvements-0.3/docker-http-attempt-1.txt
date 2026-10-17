@@ -1,0 +1,102 @@
+{
+  "synthetic": true,
+  "http_status": 200,
+  "invalid_input_status": 422,
+  "latency_ms": [
+    13.845207868143916,
+    6.060709012672305,
+    3.476999932900071
+  ],
+  "result": {
+    "results": [
+      {
+        "adapter": "first_sentence",
+        "mean_latency_ms": 0.008680666666666666,
+        "median_latency_ms": 0.003375,
+        "min_latency_ms": 0.001667,
+        "max_latency_ms": 0.021,
+        "p95_latency_ms": 0.021,
+        "exact_match_accuracy": 0.0,
+        "token_f1": 0.5,
+        "predictions": [
+          "The bicycle is green."
+        ],
+        "case_results": [
+          {
+            "case_index": 0,
+            "successful_runs": 3,
+            "failed_runs": 0,
+            "attempted_runs": 3,
+            "completion_ratio": 1.0,
+            "all_attempt_exact_match_accuracy": 0.0,
+            "all_attempt_token_f1": 0.5,
+            "exact_match_accuracy": 0.0,
+            "token_f1": 0.5,
+            "errors": [],
+            "mean_latency_ms": 0.008680666666666666,
+            "median_latency_ms": 0.003375,
+            "min_latency_ms": 0.001667,
+            "max_latency_ms": 0.021,
+            "p95_latency_ms": 0.021
+          }
+        ],
+        "successful_runs": 3,
+        "failed_runs": 0,
+        "measured_runs": 3,
+        "attempted_runs": 3,
+        "completion_ratio": 1.0,
+        "all_attempt_exact_match_accuracy": 0.0,
+        "all_attempt_token_f1": 0.5,
+        "errors": []
+      },
+      {
+        "adapter": "lexical_retrieval",
+        "mean_latency_ms": 0.008847333333333334,
+        "median_latency_ms": 0.006958,
+        "min_latency_ms": 0.0065,
+        "max_latency_ms": 0.013084,
+        "p95_latency_ms": 0.013084,
+        "exact_match_accuracy": 1.0,
+        "token_f1": 1.0,
+        "predictions": [
+          "The boat is blue."
+        ],
+        "case_results": [
+          {
+            "case_index": 0,
+            "successful_runs": 3,
+            "failed_runs": 0,
+            "attempted_runs": 3,
+            "completion_ratio": 1.0,
+            "all_attempt_exact_match_accuracy": 1.0,
+            "all_attempt_token_f1": 1.0,
+            "exact_match_accuracy": 1.0,
+            "token_f1": 1.0,
+            "errors": [],
+            "mean_latency_ms": 0.008847333333333334,
+            "median_latency_ms": 0.006958,
+            "min_latency_ms": 0.0065,
+            "max_latency_ms": 0.013084,
+            "p95_latency_ms": 0.013084
+          }
+        ],
+        "successful_runs": 3,
+        "failed_runs": 0,
+        "measured_runs": 3,
+        "attempted_runs": 3,
+        "completion_ratio": 1.0,
+        "all_attempt_exact_match_accuracy": 1.0,
+        "all_attempt_token_f1": 1.0,
+        "errors": []
+      }
+    ],
+    "dataset_size": 1,
+    "limitations": [
+      "Built-in baselines are extractive CPU methods, not LLMs. local_llm calls an operator-supplied local OpenAI-compatible server via numeric loopback or the fixed Docker host bridge.",
+      "Latency includes adapter execution and local HTTP round trips, excludes scoring, and varies by machine. Failed attempts have no successful-run latency.",
+      "Exact match and multiset token F1 ignore case and punctuation. Empty token sequences score F1 one only when both sides have no tokens, otherwise zero.",
+      "Existing accuracy and token_f1 fields use successful runs only. all_attempt fields count failed runs as zero; completion_ratio exposes the denominator.",
+      "Synthetic labels do not establish real model quality. No model weights are bundled."
+    ]
+  }
+}
