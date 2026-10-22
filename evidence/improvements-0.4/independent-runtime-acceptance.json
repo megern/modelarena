@@ -1,0 +1,19 @@
+{
+  "verified_at_utc": "2026-10-22T17:54:17.195978+00:00",
+  "status": "PASS",
+  "validator": "work/release_improvements04.py::validate_review_runtime",
+  "source_hashes_match_current_files": true,
+  "root_backend_source_proof": {
+    "status": "PASS",
+    "root_proof_path": "outputs/evidence/improvements-0.4/runtime-source.json",
+    "root_proof_sha256": "e5392418dda519a74650eb84e06dd5fca9114b5cfb7b5ed4a8f1b719ba91d3b8",
+    "container": "ef70c5323ccfe40f907672a846da3fae580e1e011f75fc72078852857a087362",
+    "application_files_verified": 13,
+    "complete_app_tree_matches": true,
+    "image_id": "sha256:492191774b8d389b4f32413f1eb9f34630b59150703d7739725abf25382f332c",
+    "native_health": "healthy",
+    "root_docker_validated_at_utc": "2026-10-22T17:43:12.346294+00:00",
+    "independently_verified_at_utc": "2026-10-22T17:54:17.195978+00:00",
+    "attribution": "Root collected private container bytes and native Docker-health evidence. Independent reviewer compared the full app mapping against current files, matched container/image identity and checked fresh actual HTTP/public bytes; private bytes were not collected by this reviewer."
+  }
+}

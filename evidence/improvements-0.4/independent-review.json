@@ -1,0 +1,314 @@
+{
+  "version": "0.4.0",
+  "reviewer": "Independent AI scientific and QA reviewer; different agent from application author",
+  "reviewed_at_utc": "2026-10-22T17:54:17.195978+00:00",
+  "status": "TESTED",
+  "release_recommendation": "Accept bounded documented local functionality subject to root remaining infrastructure, CI and publication gates.",
+  "confidence": "Moderate for bounded local research use; no external certification.",
+  "scientific_assessment": "A real single background worker and bounded queue execute benchmark requests; ephemeral completed retention, request release and serialized result limits independently verified. Cancellation and execution budgets are cooperative; synchronous analysis remains separate. Independent test found final result publication accepted cancellation during serialization yet published success; the original author repaired publication with an under-lock checkpoint, independently revalidated. Baselines are extractive methods, not trained LLMs.",
+  "issues": [
+    {
+      "id": "MODEL04-CANCEL-PUBLICATION",
+      "priority": "P2",
+      "status": "resolved",
+      "finding": "Cancellation or deadline expiry after the pre-serialization checkpoint can still publish succeeded.",
+      "reproduction": "tests/test_independent04.py::test_cancel_during_result_serialization_cannot_publish_success and test_budget_expiring_during_result_serialization_cannot_publish_success",
+      "evidence": "evidence/improvements-0.4/independent-initial-findings.txt",
+      "requested_repair": "Under the publication lock, checkpoint cancellation/deadline before storing successful result.",
+      "resolution": "Original author added execution.checkpoint under manager.lock immediately before result and succeeded assignment. Independent cancellation and deadline-during-serialization regressions now pass in full suite. Real loopback HTTP transport test also passed with approved socket access."
+    }
+  ],
+  "checks": [
+    {
+      "name": "independent-pytest",
+      "command": [
+        "-m",
+        "pytest",
+        "-q"
+      ],
+      "exit_code": 0,
+      "evidence": "evidence/improvements-0.4/independent-pytest.txt"
+    },
+    {
+      "name": "independent-node",
+      "command": [
+        "node",
+        "--test",
+        "tools/test_ui.mjs"
+      ],
+      "exit_code": 0,
+      "evidence": "evidence/improvements-0.4/independent-node.txt"
+    },
+    {
+      "name": "independent-bandit",
+      "command": [
+        "-r",
+        "app",
+        "-ll"
+      ],
+      "exit_code": 0,
+      "evidence": "evidence/improvements-0.4/independent-bandit.txt"
+    }
+  ],
+  "runtime_review": {
+    "status": "PASS",
+    "evidence": "evidence/improvements-0.4/independent-http.json",
+    "backend_freshness": {
+      "status": "PASS",
+      "root_proof_path": "outputs/evidence/improvements-0.4/runtime-source.json",
+      "root_proof_sha256": "e5392418dda519a74650eb84e06dd5fca9114b5cfb7b5ed4a8f1b719ba91d3b8",
+      "container": "ef70c5323ccfe40f907672a846da3fae580e1e011f75fc72078852857a087362",
+      "application_files_verified": 13,
+      "complete_app_tree_matches": true,
+      "image_id": "sha256:492191774b8d389b4f32413f1eb9f34630b59150703d7739725abf25382f332c",
+      "native_health": "healthy",
+      "root_docker_validated_at_utc": "2026-10-22T17:43:12.346294+00:00",
+      "independently_verified_at_utc": "2026-10-22T17:54:17.195978+00:00",
+      "attribution": "Root collected private container bytes and native Docker-health evidence. Independent reviewer compared the full app mapping against current files, matched container/image identity and checked fresh actual HTTP/public bytes; private bytes were not collected by this reviewer."
+    }
+  },
+  "source_hashes_sha256": [
+    {
+      "sha256": "ade48d79e74f366ebf724b237ad19a484cabb46a92c295fb096367ca77b1fd18",
+      "path": ".github/workflows/ci.yml"
+    },
+    {
+      "sha256": "88f17372fdd7608502821783b4b09ce6964e4e746fd1635e98ccadfe71ed5adb",
+      "path": "Dockerfile"
+    },
+    {
+      "sha256": "caa76079c65137a6da6f8670e54d368f4a617e1fcbffab8f8054cec947638524",
+      "path": "README.md"
+    },
+    {
+      "sha256": "3b6fbb337d567ed63ead9aff6414a2eb5754cbe11d348fe48580288c443cd08f",
+      "path": "app/USER_GUIDE.md"
+    },
+    {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "path": "app/__init__.py"
+    },
+    {
+      "sha256": "bc340ac2d8658f547b2a58012834d302482fea40a8773ba0363b4a1b2edf251c",
+      "path": "app/access.py"
+    },
+    {
+      "sha256": "c413fbbbdd8eb46621d8dedd49f5ab23f1ba282c84f4a0ad2f0012efcdfcb3b4",
+      "path": "app/core.py"
+    },
+    {
+      "sha256": "3f60e843b8b3dfabd61aa4171f42122c05b0e7ff5032a665112b962d20f1752d",
+      "path": "app/execution.py"
+    },
+    {
+      "sha256": "d1eda2150e58503114c6cf4ba36d5958aa7e2cfbb496fc0d8026b5c9da4beb77",
+      "path": "app/guard.py"
+    },
+    {
+      "sha256": "2a040b4d88d4c90f6490f0967b868cc8cda98784e3e60d55b8c2463cdaed2b27",
+      "path": "app/index.html"
+    },
+    {
+      "sha256": "76cb3e5e288283dfbf6d4a08b790fd859fefaacc7eaf2ed4a96910ea6548f77e",
+      "path": "app/jobs.py"
+    },
+    {
+      "sha256": "afc5bf249305d4f52039a360acab57019651f61c6267cb191d0be8f7f81fad33",
+      "path": "app/main.py"
+    },
+    {
+      "sha256": "f7a4a09a26b83052edc956cf886195c0f4687b0661a166320f460f3e3ccad0d5",
+      "path": "app/static/access.js"
+    },
+    {
+      "sha256": "29e972fbfca1660ede9ac6681e6a978446fbdec6b1956d77eeda45797c774865",
+      "path": "app/static/common.mjs"
+    },
+    {
+      "sha256": "31edaeb85459bc32652a37b11a7f5c5f716f16915fde7fe607f1ac9e3b7367c3",
+      "path": "app/static/style.css"
+    },
+    {
+      "sha256": "85f18ca90b0d18977bfd7f250e730793a081ad8bf655a53a558f6047d2e75953",
+      "path": "app/static/ui.mjs"
+    },
+    {
+      "sha256": "a3e15ecabd0bcdabed170fecc279adcb66a056935fef0ce27e21a4e23ffa5a84",
+      "path": "compose.yaml"
+    },
+    {
+      "sha256": "e3d7a27dcd6b869601c33afc9532b9ea02c14387b8ff735cbdc4144c75544ddb",
+      "path": "docs/OPERATIONS.md"
+    },
+    {
+      "sha256": "3b6fbb337d567ed63ead9aff6414a2eb5754cbe11d348fe48580288c443cd08f",
+      "path": "docs/USER_GUIDE.md"
+    },
+    {
+      "sha256": "2566220d60aa462a0e0282c0c84d9f72ad8e9c8d955a39f63c582933b3321def",
+      "path": "pyproject.toml"
+    },
+    {
+      "sha256": "581251fed4dd155b7557e5509fab2e677a895ac008ad6b998a5d08ada352ab2d",
+      "path": "requirements-dev.lock"
+    },
+    {
+      "sha256": "cc2d915f3530f2b16ab605d633b94e6c8784ee70f799daf639dd30deef2361de",
+      "path": "requirements-dev.txt"
+    },
+    {
+      "sha256": "6d989349f1aac5591af3d7e33bcf3086181ac00bf5583cc523b2ac4490b26786",
+      "path": "requirements.lock"
+    },
+    {
+      "sha256": "feb350d32f3de116bda18b133dbd26793e2891dbe58ba16f57b977b1d79be949",
+      "path": "requirements.txt"
+    },
+    {
+      "sha256": "d8f870bb86183aab1edff1987308c53f2e912daf5760189a681bd81a52db2ee5",
+      "path": "tests/test_access.py"
+    },
+    {
+      "sha256": "0c3489dda78f899f6e12bd9eaa05359c7d284b1ec90cde3a302d56f74c783cb0",
+      "path": "tests/test_access_independent.py"
+    },
+    {
+      "sha256": "76ddcb2895c34b9a94c6fa743628488534d255a993178b4d4af34f03e3615fff",
+      "path": "tests/test_api.py"
+    },
+    {
+      "sha256": "6165a89a22597a4ee363616803b1321fa3cd9f7488b08ab939c87c2d4935785e",
+      "path": "tests/test_core.py"
+    },
+    {
+      "sha256": "36cb1928903b01e4cd36bbf33e8166a34bde9b1ec1996830295caef23f9916a2",
+      "path": "tests/test_guard_review.py"
+    },
+    {
+      "sha256": "d1dd9a4cd558600774a0d341d23a06006742d6609d99552950aa81711108ec0d",
+      "path": "tests/test_improvements_03.py"
+    },
+    {
+      "sha256": "17f8eaab7c93d8e38294a2604655ae511c1ac3fe457a5a4589066828a062caec",
+      "path": "tests/test_improvements_04.py"
+    },
+    {
+      "sha256": "ab3a4186e580e262d723349a8be9c6d8b2ae5e936e18313f60aeef4a51e0b138",
+      "path": "tests/test_independent03.py"
+    },
+    {
+      "sha256": "d97e63974edb4f2cf77408daacb910fe297f4c3dc9c78a8100c646f11f8fa143",
+      "path": "tests/test_independent04.py"
+    },
+    {
+      "sha256": "29acf3115d6a6576e4623231658668254c3633666ef3660b206cf2f5587d7780",
+      "path": "tests/test_input_limits.py"
+    },
+    {
+      "sha256": "04c028c61e12eec43814e2f49c0d42566a50e037ceb4d357ed3fc4762dabf592",
+      "path": "tests/test_rebuild_interface.py"
+    },
+    {
+      "sha256": "074d97d8771bd4e0854403eb40efa65e90c84d75eaf8d3bdab0b40237f146aed",
+      "path": "tests/test_review.py"
+    },
+    {
+      "sha256": "ecedd0d5c9208a193cea960d43f084b49acd0a0dcd20e709cb2c755675769fd3",
+      "path": "tools/smoke.py"
+    },
+    {
+      "sha256": "26a68d9b7b2b26c741e9f00ede37131c7f25eef474b988bdb8e6b1218d2021d9",
+      "path": "tools/test_access.mjs"
+    },
+    {
+      "sha256": "a011463941834d70d767df7204201aff25a59172bd6955be548cd34c7ae93307",
+      "path": "tools/test_access_independent.mjs"
+    },
+    {
+      "sha256": "8207ba1964a64df2a93b8041db2befa54bf0c806a64aeb784f2da1809fe09089",
+      "path": "tools/test_ui.mjs"
+    },
+    {
+      "sha256": "7a69da2c87b8670c5f68cdec85fa2ce7a58e0b7700b5e681f151d53f826fbd6e",
+      "path": "tools/ui-test-dom.mjs"
+    }
+  ],
+  "source_bundle_sha256": "15388f63c99e1cbddc3258004e53746b27f59566d91b13667bd93ef27ed4c1b3",
+  "residual_limits": [
+    "In-process and Node tests do not establish interactive browser behavior.",
+    "No publication or remote CI success claimed by this review.",
+    "Shared-key access is not per-user isolation; state and queues are per process.",
+    "Dependency, image and secret scans are separate root release gates."
+  ],
+  "review_history": [
+    {
+      "status": "PENDING",
+      "issues": [
+        {
+          "id": "MODEL04-CANCEL-PUBLICATION",
+          "priority": "P2",
+          "status": "open",
+          "finding": "Cancellation or deadline expiry after the pre-serialization checkpoint can still publish succeeded.",
+          "reproduction": "tests/test_independent04.py::test_cancel_during_result_serialization_cannot_publish_success and test_budget_expiring_during_result_serialization_cannot_publish_success",
+          "evidence": "evidence/improvements-0.4/independent-initial-findings.txt",
+          "requested_repair": "Under the publication lock, checkpoint cancellation/deadline before storing successful result."
+        }
+      ],
+      "checks": [
+        {
+          "name": "independent-pytest",
+          "command": [
+            "-m",
+            "pytest",
+            "-q"
+          ],
+          "exit_code": 1,
+          "evidence": "evidence/improvements-0.4/independent-pytest.txt"
+        },
+        {
+          "name": "independent-node",
+          "command": [
+            "node",
+            "--test",
+            "tools/test_ui.mjs"
+          ],
+          "exit_code": 0,
+          "evidence": "evidence/improvements-0.4/independent-node.txt"
+        },
+        {
+          "name": "independent-bandit",
+          "command": [
+            "-r",
+            "app",
+            "-ll"
+          ],
+          "exit_code": 0,
+          "evidence": "evidence/improvements-0.4/independent-bandit.txt"
+        }
+      ],
+      "source_bundle_sha256": "178279cda623c765e2ff31b6220a9a76a5f83a5b06871e05799378a424a12ce9"
+    }
+  ],
+  "runtime_history": [
+    {
+      "superseded_at_utc": "2026-10-22T17:54:17.195978+00:00",
+      "reason": "Root replaced Python health checks with native BusyBox checks; app source bytes unchanged.",
+      "previous_runtime_review": {
+        "status": "PASS",
+        "evidence": "evidence/improvements-0.4/independent-http.json",
+        "backend_freshness": {
+          "status": "PASS",
+          "root_proof_path": "outputs/evidence/improvements-0.4/runtime-source.json",
+          "root_proof_sha256": "f6458868a09a476b0a69916f6fd2cdbcbdcf90a6a0b16c7c20d81c184cee301b",
+          "container": "534a48945d48625a10bbfac79e9d34959807760428b19f09a096de586bea8805",
+          "application_files_verified": 13,
+          "complete_app_tree_matches": true,
+          "image_id": "sha256:22a8af695662970839eb37666dd4ba47a96607c27cce9627c8b7c1a94a68aab7",
+          "root_docker_validated_at_utc": "2026-10-22T15:36:23.261226+00:00",
+          "independently_verified_at_utc": "2026-10-22T17:22:59.508842+00:00",
+          "attribution": "Container byte collection performed by root. Independent reviewer compared the complete root proof app-file mapping to current source, bound container/image identity through root Docker runtime evidence, and separately executed real HTTP and served-byte checks. Reviewer did not collect container-private bytes."
+        }
+      }
+    }
+  ]
+}

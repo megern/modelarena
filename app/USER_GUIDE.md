@@ -1,4 +1,4 @@
-# ModelArena user guide — 0.3.0
+# ModelArena user guide — 0.4.0
 
 ModelArena is a small local benchmark studio: edit or import a labeled question set, compare two CPU extractive baselines, or call your own local OpenAI-compatible LLM. It reports actual measured latency, exact-match accuracy, completion counts, per-run failures and case-level predictions. Session comparisons retain the original input for each run.
 
@@ -38,7 +38,7 @@ An answer can be factually correct yet score zero because exact match penalizes 
 - Docker cannot reach the host server: check MODELARENA_LLM_URL and the model server's host access settings. Docker's own `127.0.0.1` refers to the app container.
 - Null latency/accuracy: every request failed. This is not a quality result.
 - Session disappears: comparisons are browser-memory only. Export before reloading.
-- Old 0.1.0 evidence includes a successful actual CPU LLM run, but those historical measurements do not certify a new model or this rebuilt UI. Fresh 0.3.0 validation belongs in `evidence/improvements-0.3/`.
+- Old 0.1.0 evidence includes a successful actual CPU LLM run, but those historical measurements do not certify a new model or this rebuilt UI. Fresh 0.4.0 validation belongs in `evidence/improvements-0.4/`.
 
 ## Run locally
 
@@ -68,11 +68,11 @@ python -m bandit -q -r app
 python -m pip_audit -r requirements.txt
 ```
 
-Node 22 is used for browser-independent CSV/export logic tests; it is not needed to serve the application. Python tests include actual core calculations, validation failures and in-process HTTP integration. They do not establish Docker deployment or browser interaction success. Fresh 0.3.0 evidence belongs in `evidence/improvements-0.3/`. `evidence/rebuild/` records the earlier 0.2.0 rebuild; it does not validate this version. CI includes locked dependency installation, test/security gates, image scanning and secret scanning. Branch protection and release publication remain separate operator actions; no publication success is claimed by this README.
+Node 22 is used for browser-independent CSV/export logic tests; it is not needed to serve the application. Python tests include actual core calculations, validation failures and in-process HTTP integration. They do not establish Docker deployment or browser interaction success. Fresh 0.4.0 evidence belongs in `evidence/improvements-0.4/`. `evidence/rebuild/` records the earlier 0.2.0 rebuild; it does not validate this version. CI includes locked dependency installation, test/security gates, image scanning and secret scanning. Branch protection and release publication remain separate operator actions; no publication success is claimed by this README.
 
-MIT licensed. No paid service or new model download is required. Data is processed by this app server when you run an analysis. Inputs/results are not automatically saved by this application. JSON exports may contain the original input and sensitive values; inspect them before sharing. There is no authentication or rate limiter. Keep the localhost binding or supply access controls before exposing the server.
+MIT licensed. No paid service or new model download is required. Data is processed by this app server when you run an analysis. Inputs/results are not automatically saved by this application. JSON exports may contain the original input and sensitive values; inspect them before sharing. Optional shared-key API access and per-process compute admission are available; see docs/OPERATIONS.md in the repository. These are not user accounts, distributed quotas or HTTPS. Keep the default localhost binding unless you supply the additional hosting controls.
 
-## Quality and completion diagnostics (0.3.0)
+## Quality and completion diagnostics (0.4.0)
 
 Benchmark results now include **token F1**, median/minimum/maximum successful-run latency, completion ratio, and per-case success/failure counts, scores, errors and latency summaries. The session comparison table keeps these metrics with each original run. Full JSON exports preserve the same API details.
 
@@ -81,3 +81,15 @@ Token F1 uses a multiset of the same case-folded `\w+` tokens used for exact mat
 Existing `exact_match_accuracy` and new `token_f1` average **successful runs only**. New `all_attempt_exact_match_accuracy` and `all_attempt_token_f1` count each failed attempt as zero, and `completion_ratio` is successful / attempted. A model with one successful perfect answer and three failed attempts has success-only accuracy 1, all-attempt accuracy .25, and completion ratio .25. Per-case metrics expose the same denominators. When all requests fail, success-only scores and latencies are null, while all-attempt scores and completion ratio are zero. Failure messages remain sanitized and do not include raw model-server responses.
 
 Timing now explicitly excludes score computation. Mean/median/min/max and nearest-rank p95 cover successful adapter calls only. Failed attempts do not receive invented latency or quality values. No remote host relaxation, new model download, paid service or model-quality claim is introduced.
+
+## Ephemeral background jobs (0.4)
+
+The background-job panel submits the current benchmark snapshot, shows real completed/successful/failed attempt counts, polls status, requests cancellation and exports the job snapshot. It does not pretend to run requests when polling fails. Changing the editor never relabels an old job as a run of the new inputs: completed old-snapshot results enter historical session comparisons and can be exported with their original input.
+
+API: `POST /jobs` returns 202 for `{ "request": <ordinary benchmark request>, "budget_seconds": 120 }`; poll `GET /jobs/{job_id}`; `DELETE /jobs/{job_id}` returns 202 acknowledging a cancellation request. Unknown/expired jobs return 404. `examples/synthetic-job.json` runs real CPU extractive methods without a model server. Existing synchronous `/analyze` remains available and **is separate from the background worker's queue**; its calls do not join the queue or acquire the background execution budget.
+
+Each app process has one background worker and at most two queued requests; a fourth admitted-outstanding job receives 429. This is process-local memory, not a durable/distributed scheduler. Queued cancellation prevents execution. Running cancellation sets a flag; status remains running until a cooperative checkpoint acknowledges it, or the job finishes first. The overall execution budget is 0.1–300seconds, starts when the worker begins (not during queue wait), and is checked between attempts and model response chunks. Per-request HTTP timeouts are reduced to remaining budget. **This is cooperative, not a hard wall-clock kill guarantee**: an in-flight connection/read phase may wait up to its timeout before the next checkpoint. HTTP timeout phases and OS scheduling can make observed elapsed time exceed the requested budget. Do not promise hard deadlines from this tool.
+
+Job completion means the benchmark engine returned, not that every model request succeeded or passed quality checks. Successful/failed attempt denominators remain in the result. Cancellation, budget exhaustion or worker failure does not fabricate partial benchmark quality; progress counters remain available but full predictions may be absent. Error text is sanitized. Progress counts accepted completed/scored attempts; an interrupted in-flight attempt may remain uncounted.
+
+Completed records expire after 300seconds and only the eight most recently completed records are retained, so eviction/restart can remove a record earlier. Completed requests are discarded from memory. Jobs cap accumulated generated-answer text at 512KiB across attempts and retained serialized results at 1 MiB; crossing a cap fails the job explicitly, rather than silently truncating a supposedly complete benchmark. Reduce cases/repeats/token limits if these bounds are exceeded. Existing local-host allowlist, proxy/redirect restrictions and 1 MiB-per-model-response cap remain unchanged. There is no new model download or paid/external-provider capability.

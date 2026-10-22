@@ -1,0 +1,85 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 748B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-alpine@sha256:92abd2ba1bdfb48b1e2ac224b582dd1558d0d4bb11c903b126b5bf9c448fd656
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 98B done
+#3 DONE 0.0s
+
+#4 [1/5] FROM docker.io/library/python:3.12-alpine@sha256:92abd2ba1bdfb48b1e2ac224b582dd1558d0d4bb11c903b126b5bf9c448fd656
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 986B done
+#5 DONE 0.0s
+
+#6 [2/5] WORKDIR /service
+#6 CACHED
+
+#7 [3/5] COPY requirements.lock .
+#7 CACHED
+
+#8 [4/5] RUN pip install --no-cache-dir --require-hashes -r requirements.lock && python -m pip uninstall -y pip && rm -rf /usr/local/lib/python3.12/ensurepip && adduser -D -u 10001 runner
+#8 29.57 WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ReadTimeoutError("HTTPSConnectionPool(host='pypi.org', port=443): Read timed out. (read timeout=15)")': /simple/annotated-doc/
+#8 55.59 Collecting annotated-doc==0.0.5 (from -r requirements.lock (line 3))
+#8 67.84   Downloading annotated_doc-0.0.5-py3-none-any.whl (5.3 kB)
+#8 67.96 Collecting annotated-types==0.8.0 (from -r requirements.lock (line 7))
+#8 68.16   Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+#8 70.70 Collecting anyio==4.15.1 (from -r requirements.lock (line 11))
+#8 70.85   Downloading anyio-4.15.1-py3-none-any.whl (132 kB)
+#8 72.95 Collecting certifi==2026.7.22 (from -r requirements.lock (line 17))
+#8 73.16   Downloading certifi-2026.7.22-py3-none-any.whl (136 kB)
+#8 73.76 Collecting click==8.5.0 (from -r requirements.lock (line 23))
+#8 73.92   Downloading click-8.5.0-py3-none-any.whl (125 kB)
+#8 74.84 Collecting fastapi==0.143.0 (from -r requirements.lock (line 27))
+#8 75.02   Downloading fastapi-0.143.0-py3-none-any.whl (144 kB)
+#8 75.40 Collecting h11==0.16.0 (from -r requirements.lock (line 31))
+#8 75.54   Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+#8 75.83 Collecting httpcore==1.0.9 (from -r requirements.lock (line 37))
+#8 75.97   Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+#8 76.39 Collecting httpx==0.28.1 (from -r requirements.lock (line 41))
+#8 76.53   Downloading httpx-0.28.1-py3-none-any.whl (73 kB)
+#8 76.88 Collecting idna==3.20 (from -r requirements.lock (line 45))
+#8 77.07   Downloading idna-3.20-py3-none-any.whl (69 kB)
+#8 77.31 Collecting opentelemetry-api==1.45.1 (from -r requirements.lock (line 51))
+#8 77.52   Downloading opentelemetry_api-1.45.1-py3-none-any.whl (60 kB)
+#8 78.41 Collecting pydantic==2.14.1 (from -r requirements.lock (line 55))
+#8 78.62   Downloading pydantic-2.14.1-py3-none-any.whl (488 kB)
+#8 82.27 Collecting pydantic-core==2.50.1 (from -r requirements.lock (line 61))
+#8 82.50   Downloading pydantic_core-2.50.1-cp312-cp312-musllinux_1_1_aarch64.whl (2.3 MB)
+#8 86.70      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.3/2.3 MB 534.5 kB/s eta 0:00:00
+#8 86.95 Collecting starlette==1.8.0 (from -r requirements.lock (line 200))
+#8 87.09   Downloading starlette-1.8.0-py3-none-any.whl (79 kB)
+#8 87.36 Collecting typing-extensions==4.16.0 (from -r requirements.lock (line 204))
+#8 87.49   Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+#8 87.61 Collecting typing-inspection==0.4.4 (from -r requirements.lock (line 214))
+#8 87.73   Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+#8 87.92 Collecting uvicorn==0.54.0 (from -r requirements.lock (line 220))
+#8 88.03   Downloading uvicorn-0.54.0-py3-none-any.whl (87 kB)
+#8 88.21 Installing collected packages: typing-extensions, idna, h11, click, certifi, annotated-types, annotated-doc, uvicorn, typing-inspection, pydantic-core, opentelemetry-api, httpcore, anyio, starlette, pydantic, httpx, fastapi
+#8 89.38 Successfully installed annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.15.1 certifi-2026.7.22 click-8.5.0 fastapi-0.143.0 h11-0.16.0 httpcore-1.0.9 httpx-0.28.1 idna-3.20 opentelemetry-api-1.45.1 pydantic-2.14.1 pydantic-core-2.50.1 starlette-1.8.0 typing-extensions-4.16.0 typing-inspection-0.4.4 uvicorn-0.54.0
+#8 89.38 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#8 90.02 
+#8 90.02 [notice] A new release of pip is available: 25.0.1 -> 26.2.2
+#8 90.02 [notice] To update, run: pip install --upgrade pip
+#8 91.18 Found existing installation: pip 25.0.1
+#8 91.28 Uninstalling pip-25.0.1:
+#8 91.51   Successfully uninstalled pip-25.0.1
+#8 91.51 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#8 DONE 91.7s
+
+#9 [5/5] COPY app ./app
+#9 DONE 0.0s
+
+#10 exporting to image
+#10 exporting layers 0.1s done
+#10 writing image sha256:fd0ddb64df118698bb1128052c1a8f977d7479234dc556f40dc26cf5618198ed done
+#10 naming to docker.io/library/venturelab-modelarena:0.4.0 done
+#10 DONE 0.1s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/jtu916q53i3u46712gqrzm8gj

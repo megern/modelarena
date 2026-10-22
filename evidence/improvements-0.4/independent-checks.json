@@ -1,0 +1,32 @@
+[
+  {
+    "name": "independent-pytest",
+    "command": [
+      "-m",
+      "pytest",
+      "-q"
+    ],
+    "exit_code": 0,
+    "evidence": "evidence/improvements-0.4/independent-pytest.txt"
+  },
+  {
+    "name": "independent-node",
+    "command": [
+      "node",
+      "--test",
+      "tools/test_ui.mjs"
+    ],
+    "exit_code": 0,
+    "evidence": "evidence/improvements-0.4/independent-node.txt"
+  },
+  {
+    "name": "independent-bandit",
+    "command": [
+      "-r",
+      "app",
+      "-ll"
+    ],
+    "exit_code": 0,
+    "evidence": "evidence/improvements-0.4/independent-bandit.txt"
+  }
+]

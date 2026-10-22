@@ -5,6 +5,8 @@ import {
   metric,
   table,
   analyze,
+  download,
+  errorMessage,
   status,
   readFile,
   resultDetails,
@@ -360,3 +362,194 @@ setupDownloads(
   "modelarena"
 );
 drawCases([{ question: "", context: "", expected_answer: "" }]);
+
+let activeJob = null,
+  jobTimer = null;
+const terminalJobs = new Set([
+  "succeeded",
+  "completed",
+  "cancelled",
+  "timed_out",
+  "failed",
+  "unknown_or_expired"
+]);
+function showJob(job) {
+  const root = $("job-status");
+  clear(root);
+  root.append(
+    el(
+      "p",
+      `Job ${job.job_id}: ${job.status}${job.cancel_requested ? " (cancellation requested; waiting for a cooperative checkpoint)" : ""}`
+    )
+  );
+  root.append(
+    el(
+      "p",
+      `${job.progress.completed}/${job.progress.total} finished attempts · ${job.progress.successful} successful · ${job.progress.failed} failed. Queue position: ${job.queue_position ?? "not queued"}.`
+    )
+  );
+  if (job.error) root.append(el("p", job.error, "notice"));
+  if (job.expires_in_seconds !== null)
+    root.append(
+      el(
+        "p",
+        `Result retention: about ${number(job.expires_in_seconds, 0)} seconds, subject to bounded retention and process restart.`
+      )
+    );
+  $("cancel-job").disabled = terminalJobs.has(job.status);
+  $("start-job").disabled = !terminalJobs.has(job.status);
+}
+async function jobRequest(path, method = "GET") {
+  const response = await fetch(path, { method });
+  const body = await response.json();
+  if (!response.ok) {
+    const error = Error(errorMessage(body));
+    error.status = response.status;
+    throw error;
+  }
+  return body;
+}
+async function pollJob() {
+  if (!activeJob) return;
+  clearTimeout(jobTimer);
+  const job = activeJob,
+    sequence = ++job.pollRevision;
+  try {
+    const snapshot = await jobRequest(
+      "/jobs/" + encodeURIComponent(job.job_id)
+    );
+    if (activeJob !== job || sequence !== job.pollRevision) return;
+    Object.assign(job, snapshot);
+    job.pollFailures = 0;
+    showJob(job);
+    if (!terminalJobs.has(job.status)) {
+      jobTimer = setTimeout(pollJob, 500);
+      return;
+    }
+    if (
+      (job.status === "completed" || job.status === "succeeded") &&
+      job.result &&
+      !job.addedToSession
+    ) {
+      job.addedToSession = true;
+      const run = {
+        input: job.input,
+        source: job.source,
+        result: job.result,
+        finished_at: new Date().toISOString(),
+        job_id: job.job_id
+      };
+      session.push(run);
+      drawSession();
+      if (revision === job.inputRevision) {
+        latest = run;
+        render(job.result, job.input);
+        status(
+          "Background execution finished. Quality and failure counts are reported separately from job completion."
+        );
+      } else
+        status(
+          "Background job finished for its original snapshot. Current editor changed; results were added only to historical session comparisons."
+        );
+    }
+  } catch (error) {
+    if (activeJob !== job || sequence !== job.pollRevision) return;
+    if (error.status === 404) {
+      job.status = "unknown_or_expired";
+      job.error =
+        "Job no longer exists in this process. No completion result can be inferred.";
+      showJob(job);
+      return;
+    }
+    job.pollFailures++;
+    status(
+      "Cannot refresh job status. It may still be running: " + error.message,
+      true
+    );
+    if (job.pollFailures < 3) jobTimer = setTimeout(pollJob, 1000);
+  }
+}
+$("job-budget").oninput = () => {
+  revision++;
+};
+$("start-job").onclick = async () => {
+  if (activeJob && !terminalJobs.has(activeJob.status)) {
+    status(
+      "Wait for or cancel the current page's job before submitting another.",
+      true
+    );
+    return;
+  }
+  invalidate();
+  const generation = revision;
+  $("start-job").disabled = true;
+  try {
+    const request = input();
+    const requestSource = source;
+    const snapshot = await analyze(
+      { request, budget_seconds: Number($("job-budget").value) },
+      "/jobs"
+    );
+    // A submitted job remains controllable even if the editor changed while submission was in flight.
+    activeJob = {
+      ...snapshot,
+      input: request,
+      source: requestSource,
+      inputRevision: generation,
+      pollRevision: 0,
+      pollFailures: 0,
+      addedToSession: false
+    };
+    showJob(activeJob);
+    await pollJob();
+  } catch (error) {
+    status(error.message, true);
+    $("start-job").disabled = false;
+  }
+};
+$("cancel-job").onclick = async () => {
+  if (!activeJob || terminalJobs.has(activeJob.status)) return;
+  const job = activeJob,
+    sequence = ++job.pollRevision;
+  clearTimeout(jobTimer);
+  try {
+    const snapshot = await jobRequest(
+      "/jobs/" + encodeURIComponent(job.job_id),
+      "DELETE"
+    );
+    if (activeJob !== job || sequence !== job.pollRevision) return;
+    Object.assign(job, snapshot);
+    showJob(job);
+    await pollJob();
+  } catch (error) {
+    status("Cancellation could not be confirmed: " + error.message, true);
+  }
+};
+$("refresh-job").onclick = pollJob;
+$("export-job-report").onclick = () => {
+  if (!activeJob) {
+    status("Submit a background job first.", true);
+    return;
+  }
+  const {
+    pollRevision,
+    pollFailures,
+    addedToSession,
+    inputRevision,
+    ...snapshot
+  } = activeJob;
+  download(
+    "modelarena-job-" + activeJob.job_id + ".json",
+    JSON.stringify(
+      {
+        application: "modelarena",
+        version: "0.4.0",
+        exported_at: new Date().toISOString(),
+        ephemeral: true,
+        ...snapshot
+      },
+      null,
+      2
+    )
+  );
+};

@@ -9,4 +9,6 @@ services:
     mem_limit: 512m
     cpus: 1
     environment:
+      VENTURELAB_API_KEY: ${VENTURELAB_API_KEY:-}
+      VENTURELAB_MAX_INFLIGHT: ${VENTURELAB_MAX_INFLIGHT:-1}
       MODELARENA_LLM_URL: ${MODELARENA_LLM_URL:-http://host.docker.internal:11434/v1/chat/completions}
