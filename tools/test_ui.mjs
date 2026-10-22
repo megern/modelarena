@@ -295,3 +295,180 @@ test("Benchmark UI shows F1, per-case completions, latency distribution and deno
     delete globalThis.document;
   }
 });
+
+test("Background UI submits a real job protocol and polls completion without invented progress", async () => {
+  const { readFile: local } = await import("node:fs/promises");
+  const { documentFromHTML } = await import("./ui-test-dom.mjs");
+  globalThis.document = documentFromHTML(
+    await local(new URL("../app/index.html", import.meta.url), "utf8")
+  );
+  await import("../app/static/ui.mjs?feature=jobs04");
+  document.getElementById("sample").onclick();
+  const original = globalThis.fetch;
+  const paths = [];
+  const snapshot = {
+    job_id: "synthetic-protocol-job",
+    status: "running",
+    progress: { completed: 0, total: 4, successful: 0, failed: 0 },
+    cancel_requested: false,
+    queue_position: null,
+    expires_in_seconds: null,
+    error: null,
+    result: null
+  };
+  globalThis.fetch = async (path, options) => {
+    paths.push([path, options.method]);
+    if (path === "/jobs") {
+      const request = JSON.parse(options.body);
+      assert.equal(request.budget_seconds, 120);
+      assert.equal(request.request.cases.length, 2);
+      return { ok: true, status: 202, json: async () => snapshot };
+    }
+    return {
+      ok: true,
+      status: 200,
+      json: async () => ({
+        ...snapshot,
+        status: "succeeded",
+        progress: { completed: 4, total: 4, successful: 4, failed: 0 },
+        expires_in_seconds: 300,
+        result: { results: [], limitations: [] }
+      })
+    };
+  };
+  try {
+    await document.getElementById("start-job").onclick();
+    assert.deepEqual(paths, [
+      ["/jobs", "POST"],
+      ["/jobs/synthetic-protocol-job", "GET"]
+    ]);
+    assert.match(
+      document.getElementById("job-status").textContent,
+      /4\/4 finished attempts/
+    );
+    assert.equal(document.getElementById("start-job").disabled, false);
+  } finally {
+    globalThis.fetch = original;
+    delete globalThis.document;
+  }
+});
+
+test("Background UI requests cancellation and polls until the server acknowledges it", async () => {
+  const { readFile: local } = await import("node:fs/promises");
+  const { documentFromHTML } = await import("./ui-test-dom.mjs");
+  globalThis.document = documentFromHTML(
+    await local(new URL("../app/index.html", import.meta.url), "utf8")
+  );
+  await import("../app/static/ui.mjs?feature=job-cancel04");
+  document.getElementById("sample").onclick();
+  const original = globalThis.fetch;
+  let cancelled = false;
+  const snapshot = {
+    job_id: "cancel-protocol",
+    status: "running",
+    progress: { completed: 0, total: 4, successful: 0, failed: 0 },
+    cancel_requested: false,
+    queue_position: null,
+    expires_in_seconds: null,
+    error: null,
+    result: null
+  };
+  globalThis.fetch = async (path, options) => {
+    if (options.method === "DELETE") {
+      cancelled = true;
+      return {
+        ok: true,
+        status: 202,
+        json: async () => ({ ...snapshot, cancel_requested: true })
+      };
+    }
+    return {
+      ok: true,
+      status: options.method === "POST" ? 202 : 200,
+      json: async () =>
+        cancelled
+          ? {
+              ...snapshot,
+              status: "cancelled",
+              cancel_requested: true,
+              error: "cancelled"
+            }
+          : snapshot
+    };
+  };
+  try {
+    await document.getElementById("start-job").onclick();
+    await document.getElementById("cancel-job").onclick();
+    assert.equal(cancelled, true);
+    assert.match(
+      document.getElementById("job-status").textContent,
+      /: cancelled/
+    );
+    assert.equal(document.getElementById("cancel-job").disabled, true);
+  } finally {
+    globalThis.fetch = original;
+    delete globalThis.document;
+  }
+});
+
+test("Background submission retains original provenance if editor changes before acceptance", async () => {
+  const { readFile: local } = await import("node:fs/promises");
+  const { documentFromHTML, deferred } = await import("./ui-test-dom.mjs");
+  globalThis.document = documentFromHTML(
+    await local(new URL("../app/index.html", import.meta.url), "utf8")
+  );
+  await import("../app/static/ui.mjs?feature=job-source04");
+  document.getElementById("sample").onclick();
+  const original = globalThis.fetch,
+    accept = deferred();
+  const snapshot = {
+    job_id: "provenance-job",
+    status: "running",
+    progress: { completed: 0, total: 4, successful: 0, failed: 0 },
+    cancel_requested: false,
+    queue_position: null,
+    expires_in_seconds: null,
+    error: null,
+    result: null
+  };
+  globalThis.fetch = async (path, options) =>
+    options.method === "POST"
+      ? { ok: true, status: 202, json: () => accept.promise }
+      : {
+          ok: true,
+          status: 200,
+          json: async () => ({
+            ...snapshot,
+            status: "succeeded",
+            result: { results: [], limitations: [] }
+          })
+        };
+  const oldCreate = URL.createObjectURL,
+    oldRevoke = URL.revokeObjectURL;
+  let blob;
+  URL.createObjectURL = (value) => {
+    blob = value;
+    return "blob:test";
+  };
+  URL.revokeObjectURL = () => {};
+  try {
+    const pending = document.getElementById("start-job").onclick();
+    document.getElementById("model").value = "edited";
+    document.getElementById("model").dispatch("input");
+    accept.resolve(snapshot);
+    await pending;
+    document.getElementById("export-job-report").onclick();
+    const report = JSON.parse(await blob.text());
+    assert.equal(report.source, "synthetic example");
+    assert.equal(report.input.model, "local-model");
+    assert.match(
+      document.getElementById("status").textContent,
+      /original snapshot/
+    );
+  } finally {
+    globalThis.fetch = original;
+    URL.createObjectURL = oldCreate;
+    URL.revokeObjectURL = oldRevoke;
+    delete globalThis.document;
+  }
+});

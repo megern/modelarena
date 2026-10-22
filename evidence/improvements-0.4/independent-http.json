@@ -1,0 +1,177 @@
+{
+  "at_utc": "2026-10-22T17:54:13.263944+00:00",
+  "base_url": "http://127.0.0.1:18407",
+  "source_match_scope": "Exact served index, guide, every static asset, OpenAPI version and functional feature requests. Does not hash private container backend files.",
+  "checks": [
+    {
+      "path": "/",
+      "matches_current_source": true,
+      "sha256": "2a040b4d88d4c90f6490f0967b868cc8cda98784e3e60d55b8c2463cdaed2b27"
+    },
+    {
+      "path": "/guide",
+      "matches_current_source": true,
+      "sha256": "3b6fbb337d567ed63ead9aff6414a2eb5754cbe11d348fe48580288c443cd08f"
+    },
+    {
+      "path": "/assets/access.js",
+      "matches_current_source": true,
+      "sha256": "f7a4a09a26b83052edc956cf886195c0f4687b0661a166320f460f3e3ccad0d5"
+    },
+    {
+      "path": "/assets/common.mjs",
+      "matches_current_source": true,
+      "sha256": "29e972fbfca1660ede9ac6681e6a978446fbdec6b1956d77eeda45797c774865"
+    },
+    {
+      "path": "/assets/style.css",
+      "matches_current_source": true,
+      "sha256": "31edaeb85459bc32652a37b11a7f5c5f716f16915fde7fe607f1ac9e3b7367c3"
+    },
+    {
+      "path": "/assets/ui.mjs",
+      "matches_current_source": true,
+      "sha256": "85f18ca90b0d18977bfd7f250e730793a081ad8bf655a53a558f6047d2e75953"
+    }
+  ],
+  "feature": {
+    "probe": "actual queued CPU execution, progress and scored benchmark",
+    "response": {
+      "job_id": "5d5187eca8c84679825363466e13eb01",
+      "status": "succeeded",
+      "progress": {
+        "completed": 4,
+        "total": 4,
+        "successful": 4,
+        "failed": 0
+      },
+      "cancel_requested": false,
+      "budget_seconds": 10.0,
+      "age_seconds": 0.011355417000231682,
+      "queue_position": null,
+      "expires_in_seconds": 299.9945777920002,
+      "result": {
+        "results": [
+          {
+            "adapter": "first_sentence",
+            "mean_latency_ms": 0.0218335,
+            "median_latency_ms": 0.0218335,
+            "min_latency_ms": 0.007125,
+            "max_latency_ms": 0.036542,
+            "p95_latency_ms": 0.036542,
+            "exact_match_accuracy": 0.0,
+            "token_f1": 0.6666666666666666,
+            "predictions": [
+              "Cat cat."
+            ],
+            "case_results": [
+              {
+                "case_index": 0,
+                "successful_runs": 2,
+                "failed_runs": 0,
+                "attempted_runs": 2,
+                "completion_ratio": 1.0,
+                "all_attempt_exact_match_accuracy": 0.0,
+                "all_attempt_token_f1": 0.6666666666666666,
+                "exact_match_accuracy": 0.0,
+                "token_f1": 0.6666666666666666,
+                "errors": [],
+                "mean_latency_ms": 0.0218335,
+                "median_latency_ms": 0.0218335,
+                "min_latency_ms": 0.007125,
+                "max_latency_ms": 0.036542,
+                "p95_latency_ms": 0.036542
+              }
+            ],
+            "successful_runs": 2,
+            "failed_runs": 0,
+            "measured_runs": 2,
+            "attempted_runs": 2,
+            "completion_ratio": 1.0,
+            "all_attempt_exact_match_accuracy": 0.0,
+            "all_attempt_token_f1": 0.6666666666666666,
+            "errors": []
+          },
+          {
+            "adapter": "lexical_retrieval",
+            "mean_latency_ms": 0.0158125,
+            "median_latency_ms": 0.0158125,
+            "min_latency_ms": 0.005,
+            "max_latency_ms": 0.026625,
+            "p95_latency_ms": 0.026625,
+            "exact_match_accuracy": 0.0,
+            "token_f1": 0.6666666666666666,
+            "predictions": [
+              "Cat cat."
+            ],
+            "case_results": [
+              {
+                "case_index": 0,
+                "successful_runs": 2,
+                "failed_runs": 0,
+                "attempted_runs": 2,
+                "completion_ratio": 1.0,
+                "all_attempt_exact_match_accuracy": 0.0,
+                "all_attempt_token_f1": 0.6666666666666666,
+                "exact_match_accuracy": 0.0,
+                "token_f1": 0.6666666666666666,
+                "errors": [],
+                "mean_latency_ms": 0.0158125,
+                "median_latency_ms": 0.0158125,
+                "min_latency_ms": 0.005,
+                "max_latency_ms": 0.026625,
+                "p95_latency_ms": 0.026625
+              }
+            ],
+            "successful_runs": 2,
+            "failed_runs": 0,
+            "measured_runs": 2,
+            "attempted_runs": 2,
+            "completion_ratio": 1.0,
+            "all_attempt_exact_match_accuracy": 0.0,
+            "all_attempt_token_f1": 0.6666666666666666,
+            "errors": []
+          }
+        ],
+        "dataset_size": 1,
+        "limitations": [
+          "Built-in baselines are extractive CPU methods, not LLMs. local_llm calls an operator-supplied local OpenAI-compatible server via numeric loopback or the fixed Docker host bridge.",
+          "Latency includes adapter execution and local HTTP round trips, excludes scoring, and varies by machine. Failed attempts have no successful-run latency.",
+          "Exact match and multiset token F1 ignore case and punctuation. Empty token sequences score F1 one only when both sides have no tokens, otherwise zero.",
+          "Existing accuracy and token_f1 fields use successful runs only. all_attempt fields count failed runs as zero; completion_ratio exposes the denominator.",
+          "Synthetic labels do not establish real model quality. No model weights are bundled."
+        ]
+      },
+      "error": null,
+      "ephemeral": true
+    }
+  },
+  "status": "PASS",
+  "backend_freshness": {
+    "status": "PASS",
+    "root_proof_path": "outputs/evidence/improvements-0.4/runtime-source.json",
+    "root_proof_sha256": "e5392418dda519a74650eb84e06dd5fca9114b5cfb7b5ed4a8f1b719ba91d3b8",
+    "container": "ef70c5323ccfe40f907672a846da3fae580e1e011f75fc72078852857a087362",
+    "application_files_verified": 13,
+    "complete_app_tree_matches": true,
+    "image_id": "sha256:492191774b8d389b4f32413f1eb9f34630b59150703d7739725abf25382f332c",
+    "native_health": "healthy",
+    "root_docker_validated_at_utc": "2026-10-22T17:43:12.346294+00:00",
+    "independently_verified_at_utc": "2026-10-22T17:54:17.195978+00:00",
+    "attribution": "Root collected private container bytes and native Docker-health evidence. Independent reviewer compared the full app mapping against current files, matched container/image identity and checked fresh actual HTTP/public bytes; private bytes were not collected by this reviewer."
+  },
+  "root_backend_source_proof": {
+    "status": "PASS",
+    "root_proof_path": "outputs/evidence/improvements-0.4/runtime-source.json",
+    "root_proof_sha256": "e5392418dda519a74650eb84e06dd5fca9114b5cfb7b5ed4a8f1b719ba91d3b8",
+    "container": "ef70c5323ccfe40f907672a846da3fae580e1e011f75fc72078852857a087362",
+    "application_files_verified": 13,
+    "complete_app_tree_matches": true,
+    "image_id": "sha256:492191774b8d389b4f32413f1eb9f34630b59150703d7739725abf25382f332c",
+    "native_health": "healthy",
+    "root_docker_validated_at_utc": "2026-10-22T17:43:12.346294+00:00",
+    "independently_verified_at_utc": "2026-10-22T17:54:17.195978+00:00",
+    "attribution": "Root collected private container bytes and native Docker-health evidence. Independent reviewer compared the full app mapping against current files, matched container/image identity and checked fresh actual HTTP/public bytes; private bytes were not collected by this reviewer."
+  },
+  "served_bytes_match_current_source": true
+}

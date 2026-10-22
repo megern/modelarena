@@ -1,0 +1,21 @@
+{
+  "application": "modelarena",
+  "version": "0.4.0",
+  "new_routes": [
+    "POST /jobs",
+    "GET /jobs/{job_id}",
+    "DELETE /jobs/{job_id}"
+  ],
+  "checks": {
+    "pytest_passed": 35,
+    "node_ui_passed": 17,
+    "bandit_exit_code": 0
+  },
+  "scope": "Automated feature-author validation; Node tests run actual UI handlers with a minimal DOM adapter and clearly synthetic API protocol fixtures. ModelArena loopback HTTP integration was run with local-socket permission. No real 0.4 model inference, browser acceptance, image/CI or release success is claimed.",
+  "pending": [
+    "Shared access/auth/concurrency integration by orchestrator",
+    "Independent source/scientific/security review",
+    "Docker HTTP and actual-browser acceptance",
+    "Fresh dependency/secret/image gates and CI"
+  ]
+}

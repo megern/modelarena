@@ -65,7 +65,7 @@ def predict(case, method):
     return max(sentences, key=lambda s: len(q & (set(words(s)) - STOP)))
 
 
-def local_completion(case, req):
+def local_completion(case, req, execution=None):
     url = os.getenv("MODELARENA_LLM_URL", "http://127.0.0.1:8080/v1/chat/completions")
     parsed = urlparse(url)
     try:
@@ -96,6 +96,8 @@ def local_completion(case, req):
         "temperature": 0,
     }
     # Disable environment proxies; never redirect local inference to other hosts.
+    if execution is not None:
+        execution.checkpoint()
     with httpx.Client(
         timeout=req.timeout_seconds, trust_env=False, follow_redirects=False
     ) as client:
@@ -104,6 +106,8 @@ def local_completion(case, req):
             chunks = []
             size = 0
             for chunk in response.iter_bytes():
+                if execution is not None:
+                    execution.checkpoint()
                 size += len(chunk)
                 if size > 1048576:
                     raise ValueError("model response exceeds 1 MiB")
@@ -114,6 +118,7 @@ def local_completion(case, req):
     content = data["choices"][0]["message"]["content"]
     if not isinstance(content, str):
         raise ValueError("model response content must be text")
+    content.encode("utf-8")
     return content
 
 
@@ -138,13 +143,15 @@ def latency_summary(times):
     }
 
 
-def analyze(req: BenchmarkRequest):
+def analyze(req: BenchmarkRequest, execution=None):
     results = []
     methods = (
         ["first_sentence", "lexical_retrieval"]
         if req.adapter == "baselines"
         else ["local_llm"]
     )
+    completed, successful, failed = 0, 0, 0
+    total = len(methods) * len(req.cases) * req.repeats
     for method in methods:
         times, predictions, scores, f1_scores, errors, case_results = (
             [],
@@ -158,13 +165,28 @@ def analyze(req: BenchmarkRequest):
             pred = None
             case_times, case_scores, case_f1, case_errors = [], [], [], []
             for repeat in range(req.repeats):
+                if execution is not None:
+                    execution.checkpoint()
                 start = time.perf_counter_ns()
                 try:
-                    answer = (
-                        local_completion(case, req)
-                        if method == "local_llm"
-                        else predict(case, method)
-                    )
+                    if method == "local_llm":
+                        if execution is None:
+                            answer = local_completion(case, req)
+                        else:
+                            bounded = req.model_copy(
+                                update={
+                                    "timeout_seconds": min(
+                                        req.timeout_seconds,
+                                        max(0.001, execution.remaining()),
+                                    )
+                                }
+                            )
+                            answer = local_completion(case, bounded, execution)
+                    else:
+                        answer = predict(case, method)
+                    if execution is not None:
+                        execution.checkpoint()
+                        execution.accept_output(answer)
                     elapsed = (time.perf_counter_ns() - start) / 1e6
                     # Scoring is outside measured adapter latency.
                     exact = float(words(case.expected_answer) == words(answer))
@@ -176,6 +198,7 @@ def analyze(req: BenchmarkRequest):
                     case_scores.append(exact)
                     f1_scores.append(f1)
                     case_f1.append(f1)
+                    successful += 1
                 except (
                     httpx.HTTPError,
                     ValueError,
@@ -192,6 +215,11 @@ def analyze(req: BenchmarkRequest):
                     }
                     errors.append(failure)
                     case_errors.append(failure)
+                    failed += 1
+                completed += 1
+                if execution is not None:
+                    execution.progress(completed, total, successful, failed)
+                    execution.checkpoint()
             predictions.append(pred)
             case_results.append(
                 {

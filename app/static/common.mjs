@@ -191,7 +191,7 @@ export function setupDownloads(getInput, getReport, prefix) {
       JSON.stringify(
         {
           application: prefix,
-          version: "0.3.0",
+          version: "0.4.0",
           generated_at: new Date().toISOString(),
           ...r
         },

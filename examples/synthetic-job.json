@@ -1,0 +1,14 @@
+{
+  "request": {
+    "cases": [
+      {
+        "question": "What color is the boat?",
+        "context": "The synthetic bicycle is green. The synthetic boat is blue.",
+        "expected_answer": "The synthetic boat is blue."
+      }
+    ],
+    "adapter": "baselines",
+    "repeats": 2
+  },
+  "budget_seconds": 10
+}
